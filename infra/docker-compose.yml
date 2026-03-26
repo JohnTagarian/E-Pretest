@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  api:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ../:/app
+    command: bash -lc "echo 'API skeleton - implementation in next step' && sleep infinity"
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./env/.env.example
+    depends_on:
+      - postgres
+      - mongo
+
+  web:
+    image: node:20
+    working_dir: /app/apps/web
+    volumes:
+      - ../:/app
+    command: bash -lc "echo 'WEB skeleton - implementation in next step' && sleep infinity"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=epretest
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
