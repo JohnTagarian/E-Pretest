@@ -1,0 +1,30 @@
+{
+    "quizzes": [
+        {
+            "question": "จากข้อมูลที่ให้มา ข้อใดคือความหมายที่ถูกต้องของ 'Software Engineering' ตามที่อธิบายไว้ใน Frequently Asked Questions?",
+            "question_tag": "Introduction to Software Engineering",
+            "choice_1": "เป็นสาขาวิชาวิศวกรรมที่เกี่ยวข้องกับทุกแง่มุมของการผลิตซอฟต์แวร์",
+            "choice_2": "เป็นสาขาวิชาที่เน้นการเขียนโปรแกรมคอมพิวเตอร์โดยไม่ต้องใช้กระบวนการที่ซับซ้อน",
+            "choice_3": "เป็นสาขาวิชาที่เน้นเฉพาะการพัฒนาเกมและระบบความบันเทิง",
+            "choice_4": "เป็นสาขาวิชาที่เน้นทฤษฎีและพื้นฐานทางคอมพิวเตอร์เป็นหลัก",
+            "correct_answer": 1,
+            "choice_1_exp": "ถูกต้อง ตามข้อมูลในตาราง FAQ ระบุชัดเจนว่า 'Software engineering is an engineering discipline that is concerned with all aspects of software production.'",
+            "choice_2_exp": "ไม่ถูกต้อง ข้อมูลระบุว่าการไม่ใช้ software engineering methods ทำให้ซอฟต์แวร์มีราคาแพงและเชื่อถือได้น้อยกว่าที่ควรจะเป็น",
+            "choice_3_exp": "ไม่ถูกต้อง แม้จะมี Application types เป็น Entertainment systems แต่ software engineering ครอบคลุมทุกประเภทของระบบ ไม่ใช่เฉพาะเกม",
+            "choice_4_exp": "ไม่ถูกต้อง ข้อมูลในตาราง FAQ ระบุชัดเจนว่าความแตกต่างระหว่าง software engineering และ computer science คือ computer science เน้นทฤษฎีและพื้นฐาน ในขณะที่ software engineering เน้นการปฏิบัติในการพัฒนาและส่งมอบซอฟต์แวร์ที่มีประโยชน์"
+        },
+        {
+            "question": "ตามข้อมูลในหัวข้อ 'Essential attributes of good software' ข้อใดคือคำอธิบายที่ถูกต้องของ 'Maintainability'?",
+            "question_tag": "Software Products and Attributes",
+            "choice_1": "ซอฟต์แวร์ควรเขียนในลักษณะที่สามารถปรับเปลี่ยนได้เพื่อตอบสนองความต้องการที่เปลี่ยนแปลงไปของลูกค้า",
+            "choice_2": "ซอฟต์แวร์ควรไม่ใช้ทรัพยากรของระบบอย่างสิ้นเปลือง เช่น หน่วยความจำและรอบการประมวลผล",
+            "choice_3": "ซอฟต์แวร์ควรมีความน่าเชื่อถือและปลอดภัย ไม่ก่อให้เกิดความเสียหายทางกายภาพหรือเศรษฐกิจเมื่อระบบล้มเหลว",
+            "choice_4": "ซอฟต์แวร์ต้องเป็นที่ยอมรับของผู้ใช้ประเภทที่ออกแบบมา ซึ่งหมายความว่าต้องเข้าใจได้ ใช้งานได้ และเข้ากันได้กับระบบอื่นๆ",
+            "correct_answer": 1,
+            "choice_1_exp": "ถูกต้อง ตามข้อมูลในตารางระบุชัดเจนว่า 'Software should be written in such a way so that it can evolve to meet the changing needs of customers.'",
+            "choice_2_exp": "ไม่ถูกต้อง นี่คือคำอธิบายของ 'Efficiency' ไม่ใช่ Maintainability",
+            "choice_3_exp": "ไม่ถูกต้อง นี่คือคำอธิบายของ 'Dependability and security' ไม่ใช่ Maintainability",
+            "choice_4_exp": "ไม่ถูกต้อง นี่คือคำอธิบายของ 'Acceptability' ไม่ใช่ Maintainability"
+        }
+    ]
+}
