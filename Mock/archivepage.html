@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Academic Nexus - Archive Manager</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              background: "#081425",
+              "accent-orange": "#FB5C0C",
+            },
+            fontFamily: {
+              headline: ["Inter"],
+              body: ["Inter"],
+              label: ["Inter"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      body {
+        background-color: #081425;
+        color: #d8e3fb;
+        font-family: "Inter", sans-serif;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+
+  <body class="antialiased selection:bg-accent-orange/30 overflow-hidden h-screen flex flex-col">
+    
+    <header class="flex justify-between items-center w-full px-6 h-16 z-50 bg-[#111C2D] no-border font-['Inter'] antialiased tracking-tight text-[#D8E3FB]">
+      <div class="flex items-center gap-8">
+        <span class="text-xl font-bold tracking-tighter text-[#FB5C0C]">E-Pretest</span>
+        <nav class="hidden md:flex gap-6 items-center">
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="mainpage.html">Dashboard</a>
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="subjectpage.html">Subjects</a>
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="history.html">History</a>
+          <a class="text-[#FB5C0C] font-semibold border-b-2 border-[#FB5C0C] pb-0.5" href="#">Archive</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="p-2 rounded-full hover:bg-[#2A3548] transition-colors relative">
+          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-[#FB5C0C] rounded-full"></span>
+        </button>
+        <div class="flex items-center gap-3 pl-2">
+          <div class="text-right hidden sm:block">
+            <p class="text-xs font-bold">Academic Scholar</p>
+            <p class="text-[10px] opacity-50">Scholar Profile</p>
+          </div>
+          <img alt="User Scholar Profile" class="w-10 h-10 rounded-full border border-[#998e8f]/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjaMOViYSzT6fG-GwSK1tyxYPb__9NrSsso5tQXw-pj_BTGQ2pkF6z_PXJR3_iYbE9hXmcVo4TSvpv8jI-_O3gYOh3h7T_5_S22-wFI3qMSx0ZCdWVtf3EEIxBJzWrI-SxoBo8WgFGc8XIlleXtYFulfVNFQw8ojrCktAZEfUvHBEqh8TaimUXv7hx6-LB2d-IhGvOOxP0Q5TJUpLVuDHKJfHW8STcC4qwQ1U1r7AIMQZSvbn9aG2EVSGbhxWIo3Itg-H7SrRDNnRx" />
+        </div>
+      </div>
+    </header>
+
+    <main class="pt-10 pb-12 px-8 max-w-[1600px] w-full mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 flex-1 h-[calc(100vh-4rem)]">
+      
+      <section class="md:col-span-4 lg:col-span-3 flex flex-col h-full overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold tracking-tight text-[#D8E3FB]">Archived Subjects</h2>
+        </div>
+        
+        <button class="w-full bg-[#FB5C0C] text-white font-semibold py-3 px-4 rounded-xl hover:bg-[#FB5C0C]/90 transition-all shadow-lg shadow-[#FB5C0C]/20 shrink-0 mb-6 flex items-center justify-center gap-2 active:scale-[0.98]">
+  <span class="material-symbols-outlined text-xl">add</span>
+  Add New Subject
+</button>
+
+<div class="flex-1 overflow-y-auto space-y-3 pr-2 hide-scrollbar">
+  
+  <button class="w-full flex items-center justify-between p-5 rounded-xl bg-[#2A3548] border-r-4 border-[#FB5C0C] transition-all group active:scale-[0.98] text-left">
+    <div class="flex flex-col overflow-hidden pr-4">
+      <h3 class="font-semibold text-lg text-[#FB5C0C] truncate">
+        Calculus II
+      </h3>
+      <div class="flex items-center gap-3 mt-1.5">
+        <span class="text-[11px] font-mono text-[#FB5C0C]/80 bg-black/20 px-2 py-0.5 rounded tracking-wider">0305xxxx</span>
+        <p class="text-xs font-mono text-[#D8E3FB]/40">Added on 14-02-2026</p>
+      </div>
+    </div>
+    <span class="chevron-icon material-symbols-outlined text-[#FB5C0C] shrink-0">chevron_right</span>
+  </button>
+
+  <button class="w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98] text-left">
+    <div class="flex flex-col overflow-hidden pr-4">
+      <h3 class="font-medium text-lg text-[#D8E3FB]/80 group-hover:text-[#D8E3FB] truncate">
+        Physic I
+      </h3>
+      <div class="flex items-center gap-3 mt-1.5">
+        <span class="text-[11px] font-mono text-[#D8E3FB]/50 bg-white/5 px-2 py-0.5 rounded tracking-wider">0305xxxx</span>
+        <p class="text-xs font-mono text-[#D8E3FB]/40">Added on 14-02-2026</p>
+      </div>
+    </div>
+    <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50 shrink-0">chevron_right</span>
+  </button>
+
+  <button class="w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98] text-left">
+    <div class="flex flex-col overflow-hidden pr-4">
+      <h3 class="font-medium text-lg text-[#D8E3FB]/80 group-hover:text-[#D8E3FB] truncate">
+        Computer Programming
+      </h3>
+      <div class="flex items-center gap-3 mt-1.5">
+        <span class="text-[11px] font-mono text-[#D8E3FB]/50 bg-white/5 px-2 py-0.5 rounded tracking-wider">0305xxxx</span>
+        <p class="text-xs font-mono text-[#D8E3FB]/40">Added on 14-02-2026</p>
+      </div>
+    </div>
+    <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50 shrink-0">chevron_right</span>
+  </button>
+
+    <button class="w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98] text-left">
+        <div class="flex flex-col overflow-hidden pr-4">
+            <h3 class="font-medium text-lg text-[#D8E3FB]/80 group-hover:text-[#D8E3FB] truncate">
+                Biological
+            </h3>
+            <div class="flex items-center gap-3 mt-1.5">
+            <span class="text-[11px] font-mono text-[#D8E3FB]/50 bg-white/5 px-2 py-0.5 rounded tracking-wider">0305xxxx</span>
+                <p class="text-xs font-mono text-[#D8E3FB]/40">Added on 14-02-2026</p>
+            </div>
+            </div>
+                <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50 shrink-0">chevron_right</span>
+            </button>
+
+        </div>
+      </section>
+
+      <section class="md:col-span-8 lg:col-span-9 flex flex-col h-full overflow-hidden bg-[#111C2D]/30 rounded-2xl border border-white/5 p-8">
+        
+        <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+          <h2 class="text-xl font-bold tracking-tight text-[#D8E3FB]">Subject Details</h2>
+          <button class="flex items-center gap-2 text-sm text-[#D8E3FB]/60 hover:text-[#D8E3FB] transition-colors">
+            <span class="material-symbols-outlined text-lg">edit</span>
+            Edit
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-8 pr-4 hide-scrollbar">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-[#111C2D] p-5 rounded-2xl border border-white/5 flex flex-col justify-center">
+              <p class="text-xs font-bold uppercase tracking-widest text-[#D8E3FB]/40 mb-2">Subject Name</p>
+              <p class="text-xl font-bold text-[#D8E3FB]">Calculus II</p>
+            </div>
+            <div class="bg-[#111C2D] p-5 rounded-2xl border border-white/5 flex flex-col justify-center">
+              <p class="text-xs font-bold uppercase tracking-widest text-[#D8E3FB]/40 mb-2">Subject ID</p>
+              <p class="text-xl font-mono text-[#D8E3FB]/80 tracking-wider">0305xxxx</p>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-widest text-[#D8E3FB]/40 mb-4">Assigned Tags</h3>
+            <div class="flex flex-wrap gap-3">
+              <span class="bg-[#2A3548] text-[#D8E3FB] px-4 py-2 rounded-lg text-sm font-medium border border-white/5">Mathematics</span>
+              <span class="bg-[#2A3548] text-[#D8E3FB] px-4 py-2 rounded-lg text-sm font-medium border border-white/5">Engineering</span>
+              <span class="bg-[#2A3548] text-[#D8E3FB] px-4 py-2 rounded-lg text-sm font-medium border border-white/5">Fundamental</span>
+              <span class="bg-[#2A3548] text-[#D8E3FB] px-4 py-2 rounded-lg text-sm font-medium border border-white/5">Semester 2</span>
+              
+              <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-dashed border-white/20 text-[#D8E3FB]/40 hover:text-[#D8E3FB] hover:border-[#D8E3FB]/50 hover:bg-white/5 transition-all">
+                <span class="material-symbols-outlined text-lg">add</span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xs font-bold uppercase tracking-widest text-[#D8E3FB]/40">References</h3>
+              <span class="text-xs font-bold uppercase tracking-widest text-[#D8E3FB]/40">2 Items</span>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-6 bg-[#111C2D] rounded-2xl hover:bg-[#1F2A3C] transition-all border border-white/5 group cursor-pointer">
+                <div class="flex items-center gap-6">
+                  <div class="p-3 bg-[#2A3548] rounded-xl group-hover:bg-[#FB5C0C]/10 transition-colors">
+                    <span class="material-symbols-outlined text-[#D8E3FB]/60 group-hover:text-[#FB5C0C] text-2xl transition-colors">menu_book</span>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-[#D8E3FB] group-hover:text-[#FB5C0C] transition-colors">Calculus by I here Lerson</h4>
+                    <p class="text-sm font-mono text-[#D8E3FB]/40 mt-1">Added on 14-02-2026</p>
+                  </div>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-[#D8E3FB]/60 group-hover:bg-[#FB5C0C] group-hover:text-white transition-all">
+                  <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-6 bg-[#111C2D] rounded-2xl hover:bg-[#1F2A3C] transition-all border border-white/5 group cursor-pointer">
+                <div class="flex items-center gap-6">
+                  <div class="p-3 bg-[#2A3548] rounded-xl group-hover:bg-[#FB5C0C]/10 transition-colors">
+                    <span class="material-symbols-outlined text-[#D8E3FB]/60 group-hover:text-[#FB5C0C] text-2xl transition-colors">menu_book</span>
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-bold text-[#D8E3FB] group-hover:text-[#FB5C0C] transition-colors">Calculus basic by Dr.SomPorn</h4>
+                    <p class="text-sm font-mono text-[#D8E3FB]/40 mt-1">Added on 14-02-2026</p>
+                  </div>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-[#D8E3FB]/60 group-hover:bg-[#FB5C0C] group-hover:text-white transition-all">
+                  <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      
+    </main>
+  </body>
+</html>

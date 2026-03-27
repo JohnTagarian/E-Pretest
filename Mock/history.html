@@ -1,0 +1,405 @@
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>E-Pretest - History</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#FB5C0C",
+              "background": "#081425",
+              "on-background": "#D8E3FB",
+              "surface-container-high": "#1F2A3C",
+              "surface": "#081425",
+              "outline-variant": "#4d4545",
+              "surface-container-lowest": "#040E1F",
+              "surface-container-highest": "#2A3548",
+              "surface-container-low": "#111C2D",
+              "accent-orange": "#FB5C0C",
+            },
+            fontFamily: {
+              headline: ["Inter"],
+              body: ["Inter"],
+              label: ["Inter"],
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            },
+            animation: {
+              fadeIn: 'fadeIn 0.3s ease-out forwards',
+            }
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      body {
+        background-color: #081425;
+        color: #d8e3fb;
+        font-family: "Inter", sans-serif;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      /* Active state for history cards */
+      .history-card.active {
+        background-color: #1F2A3C;
+        border-color: #FB5C0C;
+        border-left-width: 4px;
+      }
+    </style>
+  </head>
+  <body class="antialiased selection:bg-accent-orange/30 overflow-hidden">
+    <header class="flex justify-between items-center w-full px-6 h-16 z-50 bg-[#111C2D] border-b border-white/5 font-['Inter'] antialiased tracking-tight text-[#D8E3FB]">
+      <div class="flex items-center gap-8">
+        <span class="text-xl font-bold tracking-tighter text-[#FB5C0C]">E-Pretest</span>
+        <nav class="hidden md:flex gap-6 items-center">
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="mainpage.html">Dashboard</a>
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="subjectpage.html">Subjects</a>
+          <a class="text-[#FB5C0C] font-semibold border-b-2 border-[#FB5C0C] pb-0.5" href="#">History</a>
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="archivepage.html">Archive</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="p-2 rounded-full hover:bg-[#2A3548] transition-colors relative">
+          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-[#FB5C0C] rounded-full"></span>
+        </button>
+        <div class="flex items-center gap-3 pl-2">
+          <div class="text-right hidden sm:block">
+            <p class="text-xs font-bold">Academic Scholar</p>
+            <p class="text-[10px] opacity-50">Scholar Profile</p>
+          </div>
+          <img alt="User Scholar Profile" class="w-10 h-10 rounded-full border border-outline-variant/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOAugRPYoKnnMU_7G4odzEynhlwniW1xQqdWQ8Ot1t0VMbvDSv7UGTaUm7MUUdDnQ-v4UNCCtFkY_PBrSLjV031bqzIBfeyXy8bR27n_xDYn4VdejrNUFVzuU12PD2BLRo_UQ6_B2UhGwPbf7NaT5Ek5TjosXpraTo5-5XfrroKq64IqVyqzxZKIr6V_Yp4GcbtRZMmaWDFIkG3y0KCmj1vFbuCwVjXIht2Ys3t7y06YRxIfDD5pO5eiBCmZq2AQ5ZzLEdcl8DvIWg" />
+        </div>
+      </div>
+    </header>
+
+    <main class="pt-10 pb-12 px-8 max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 h-[calc(100vh-4rem)]">
+      
+      <section class="md:col-span-5 lg:col-span-4 flex flex-col h-full overflow-hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold tracking-tight text-[#D8E3FB]">Recent History</h2>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto space-y-3 pr-2 hide-scrollbar" id="history-list">
+          
+          <div id="card-calc" onclick="loadDetail('calc')" class="history-card active bg-[#111C2D] rounded-xl p-4 flex items-center justify-between group hover:bg-[#1F2A3C] transition-all border border-white/5 cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-[#2A3548] flex items-center justify-center text-[#FB5C0C] shrink-0 group-hover:bg-[#FB5C0C]/20 transition-colors">
+                <span class="material-symbols-outlined" data-icon="functions">functions</span>
+              </div>
+              <div class="min-w-0">
+                <h4 class="font-bold text-sm truncate text-[#D8E3FB] group-hover:text-white">Advanced Calculus III</h4>
+                <p class="text-[11px] opacity-50 truncate">Oct 24, 2023 • 45 Qs</p>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="text-base font-bold text-[#10B981]">92%</p>
+            </div>
+          </div>
+          
+          <div id="card-chem" onclick="loadDetail('chem')" class="history-card bg-[#111C2D] rounded-xl p-4 flex items-center justify-between group hover:bg-[#1F2A3C] transition-all border border-white/5 cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-[#2A3548] flex items-center justify-center text-[#FB5C0C] shrink-0 group-hover:bg-[#FB5C0C]/20 transition-colors">
+                <span class="material-symbols-outlined" data-icon="science">science</span>
+              </div>
+              <div class="min-w-0">
+                <h4 class="font-bold text-sm truncate text-[#D8E3FB] group-hover:text-white">Organic Chemistry</h4>
+                <p class="text-[11px] opacity-50 truncate">Oct 21, 2023 • 30 Qs</p>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="text-base font-bold text-[#FB5C0C]">68%</p>
+            </div>
+          </div>
+          
+          <div id="card-thermo" onclick="loadDetail('thermo')" class="history-card bg-[#111C2D] rounded-xl p-4 flex items-center justify-between group hover:bg-[#1F2A3C] transition-all border border-white/5 cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-[#2A3548] flex items-center justify-center text-[#FB5C0C] shrink-0 group-hover:bg-[#FB5C0C]/20 transition-colors">
+                <span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span>
+              </div>
+              <div class="min-w-0">
+                <h4 class="font-bold text-sm truncate text-[#D8E3FB] group-hover:text-white">Thermodynamics Lab</h4>
+                <p class="text-[11px] opacity-50 truncate">Oct 18, 2023 • 25 Qs</p>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="text-base font-bold text-[#10B981]">85%</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="detail-section" class="md:col-span-7 lg:col-span-8 flex flex-col h-full overflow-hidden bg-[#111C2D]/30 rounded-2xl border border-white/5 p-8">
+        </section>
+      
+    </main>
+
+    <template id="review-questions-template">
+      <div class="space-y-6">
+        <div class="bg-[#111C2D] rounded-xl overflow-hidden">
+            <div class="p-6 border-l-4 border-emerald-500/50">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-[#797676] uppercase tracking-widest">Question 01</span>
+                    <div class="flex items-center gap-2 text-emerald-400">
+                        <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                        <span class="text-[10px] font-bold uppercase">Correct</span>
+                    </div>
+                </div>
+                <p class="text-lg leading-relaxed text-[#D8E3FB] mb-6 font-medium">Evaluate the limit: $\lim_{x \to 0} \frac{\sin(x)}{x}$. Explain the significance of this limit in the context of the derivative of trigonometric functions.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <div class="bg-[#081425] p-4 rounded-lg">
+                            <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Your Answer</span>
+                            <p class="text-emerald-400 font-bold">1</p>
+                        </div>
+                        <div class="bg-[#081425] p-4 rounded-lg">
+                            <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Correct Answer</span>
+                            <p class="text-[#D8E3FB] font-bold">1</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#1F2A3C] p-6 rounded-lg">
+                        <span class="text-[10px] font-bold text-accent-orange uppercase block mb-3 tracking-widest">Explanation</span>
+                        <p class="text-sm text-[#D8E3FB]/80 leading-relaxed mb-4">
+                            Using L'Hôpital's Rule or the geometric squeeze theorem, the limit evaluates to 1. This fundamental limit is crucial for proving that $\frac{d}{dx}(\sin x) = \cos x$.
+                        </p>
+                        <div class="pt-4 border-t border-[#2A3548]">
+                            <div class="flex items-center gap-2 text-[#797676]">
+                                <span class="material-symbols-outlined text-sm" data-icon="menu_book">menu_book</span>
+                                <span class="text-[10px] font-bold italic tracking-tight">Reference: Calculus I, Page 460, Line 12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-[#111C2D] rounded-xl overflow-hidden">
+            <div class="p-6 border-l-4 border-accent-orange/50">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-[#797676] uppercase tracking-widest">Question 02</span>
+                    <div class="flex items-center gap-2 text-accent-orange">
+                        <span class="material-symbols-outlined text-sm" data-icon="cancel">cancel</span>
+                        <span class="text-[10px] font-bold uppercase">Incorrect</span>
+                    </div>
+                </div>
+                <p class="text-lg leading-relaxed text-[#D8E3FB] mb-6 font-medium">Find the derivative of $f(x) = \ln(x^2 + 1)$.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <div class="bg-[#081425] p-4 rounded-lg">
+                            <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Your Answer</span>
+                            <p class="text-accent-orange font-bold">$1 / (x^2 + 1)$</p>
+                        </div>
+                        <div class="bg-[#081425] p-4 rounded-lg">
+                            <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Correct Answer</span>
+                            <p class="text-emerald-400 font-bold">$2x / (x^2 + 1)$</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#1F2A3C] p-6 rounded-lg">
+                        <span class="text-[10px] font-bold text-accent-orange uppercase block mb-3 tracking-widest">Explanation</span>
+                        <p class="text-sm text-[#D8E3FB]/80 leading-relaxed mb-4">
+                            The chain rule must be applied here. Let $u = x^2 + 1$. Then $f(x) = \ln(u)$, and $f'(x) = \frac{1}{u} \cdot \frac{du}{dx}$. Since $\frac{du}{dx} = 2x$, the final result is $\frac{2x}{x^2 + 1}$. You forgot to multiply by the derivative of the inner function.
+                        </p>
+                        <div class="pt-4 border-t border-[#2A3548]">
+                            <div class="flex items-center gap-2 text-[#797676]">
+                                <span class="material-symbols-outlined text-sm" data-icon="menu_book">menu_book</span>
+                                <span class="text-[10px] font-bold italic tracking-tight">Reference: Essential Calculus, Section 3.4, Theorem 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-[#111C2D] rounded-xl overflow-hidden">
+            <div class="p-6 border-l-4 border-emerald-500/50">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-bold text-[#797676] uppercase tracking-widest">Question 03</span>
+                    <div class="flex items-center gap-2 text-emerald-400">
+                        <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                        <span class="text-[10px] font-bold uppercase">Correct</span>
+                    </div>
+                </div>
+                <p class="text-lg leading-relaxed text-[#D8E3FB] mb-6 font-medium">State the Fundamental Theorem of Calculus (Part 1).</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <div class="bg-[#081425] p-4 rounded-lg">
+                            <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Your Answer</span>
+                            <p class="text-emerald-400 font-bold">If $f$ is continuous on $[a, b]$, then $g(x) = \int_a^x f(t) dt$ has derivative $g'(x) = f(x)$.</p>
+                        </div>
+                        <div class="bg-[#081425] p-4 rounded-lg">
+                            <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Correct Answer</span>
+                            <p class="text-[#D8E3FB] font-bold">If $f$ is continuous on $[a, b]$, then $g(x) = \int_a^x f(t) dt$ has derivative $g'(x) = f(x)$.</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#1F2A3C] p-6 rounded-lg">
+                        <span class="text-[10px] font-bold text-accent-orange uppercase block mb-3 tracking-widest">Explanation</span>
+                        <p class="text-sm text-[#D8E3FB]/80 leading-relaxed mb-4">
+                            This theorem connects differential calculus and integral calculus. It states that differentiation and integration are inverse processes.
+                        </p>
+                        <div class="pt-4 border-t border-[#2A3548]">
+                            <div class="flex items-center gap-2 text-[#797676]">
+                                <span class="material-symbols-outlined text-sm" data-icon="menu_book">menu_book</span>
+                                <span class="text-[10px] font-bold italic tracking-tight">Reference: Stewart's Calculus, Chapter 5.3, p. 394</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      const historyData = {
+        calc: {
+          title: "Advanced Calculus III",
+          icon: "functions",
+          date: "October 24, 2023",
+          totalQuestions: 45,
+          correct: 41,
+          incorrect: 4,
+          score: "92%",
+          scoreColor: "#10B981", 
+          timeSpent: "42 mins",
+          status: "Passed"
+        },
+        chem: {
+          title: "Organic Chemistry",
+          icon: "science",
+          date: "October 21, 2023",
+          totalQuestions: 30,
+          correct: 20,
+          incorrect: 10,
+          score: "68%",
+          scoreColor: "#FB5C0C", 
+          timeSpent: "28 mins",
+          status: "Needs Review"
+        },
+        thermo: {
+          title: "Thermodynamics Lab",
+          icon: "precision_manufacturing",
+          date: "October 18, 2023",
+          totalQuestions: 25,
+          correct: 21,
+          incorrect: 4,
+          score: "85%",
+          scoreColor: "#10B981", 
+          timeSpent: "35 mins",
+          status: "Passed"
+        }
+      };
+
+      function loadDetail(id) {
+        // อัปเดตสถานะ Active ของ Card
+        document.querySelectorAll('.history-card').forEach(card => {
+          card.classList.remove('active', 'border-l-4');
+        });
+        document.getElementById(`card-${id}`).classList.add('active');
+
+        const data = historyData[id];
+        const container = document.getElementById('detail-section');
+        
+        // ดึง HTML ของชุดคำถามมาจาก <template>
+        const reviewQuestionsHtml = document.getElementById('review-questions-template').innerHTML;
+
+        container.innerHTML = `
+          <div class="flex flex-col h-full animate-fadeIn overflow-hidden">
+            
+            <div class="flex-1 overflow-y-auto hide-scrollbar pr-2 pb-6">
+                <div class="flex items-start justify-between mb-10 pb-6 border-b border-white/5">
+                  <div class="flex items-center gap-6">
+                    <div class="w-20 h-20 rounded-2xl bg-[#2A3548] flex items-center justify-center text-[#FB5C0C] shadow-lg">
+                      <span class="material-symbols-outlined text-5xl">${data.icon}</span>
+                    </div>
+                    <div>
+                      <h2 class="text-3xl font-bold text-[#D8E3FB] tracking-tight">${data.title}</h2>
+                      <div class="flex items-center gap-3 mt-2 text-sm opacity-60">
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> ${data.date}</span>
+                        <span>•</span>
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">timer</span> ${data.timeSpent}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-5xl font-bold tracking-tighter" style="color: ${data.scoreColor}">${data.score}</div>
+                    <div class="text-xs uppercase tracking-widest opacity-50 mt-2 font-semibold">${data.status}</div>
+                  </div>
+                </div>
+
+                <h3 class="text-lg font-semibold mb-4 text-[#D8E3FB]/80">Performance Summary</h3>
+                <div class="grid grid-cols-3 gap-4 mb-10">
+                  <div class="bg-[#111C2D] rounded-xl p-5 border border-white/5 flex flex-col justify-center">
+                    <span class="text-sm opacity-50 mb-1">Total Questions</span>
+                    <span class="text-2xl font-bold text-[#D8E3FB]">${data.totalQuestions}</span>
+                  </div>
+                  <div class="bg-[#10B981]/10 rounded-xl p-5 border border-[#10B981]/20 flex flex-col justify-center">
+                    <span class="text-sm text-[#10B981]/80 mb-1">Correct Answers</span>
+                    <span class="text-2xl font-bold text-[#10B981]">${data.correct}</span>
+                  </div>
+                  <div class="bg-[#EF4444]/10 rounded-xl p-5 border border-[#EF4444]/20 flex flex-col justify-center">
+                    <span class="text-sm text-[#EF4444]/80 mb-1">Incorrect Answers</span>
+                    <span class="text-2xl font-bold text-[#EF4444]">${data.incorrect}</span>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <div class="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 class="text-lg font-semibold text-[#D8E3FB]/80">Detailed Review</h3>
+                      <p class="text-sm opacity-50">Review your answers and explanations below.</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button class="flex items-center gap-2 bg-[#2A3548] hover:bg-accent-orange text-white px-4 py-1.5 rounded-lg transition-all text-[11px] font-bold uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                            Download PDF
+                        </button>
+                        
+                        <div class="h-6 w-px bg-surface-container-highest mx-2"></div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1.5 rounded bg-[#1F2A3C] text-[10px] font-bold text-accent-orange uppercase tracking-wider">All Questions</span>
+                            <span class="px-3 py-1.5 rounded hover:bg-[#1F2A3C] text-[10px] font-bold text-[#797676] uppercase tracking-wider cursor-pointer transition-all">Incorrect Only</span>
+                        </div>
+                    </div>
+                  </div>
+                  
+                  ${reviewQuestionsHtml}
+                  
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/5 shrink-0 mt-2">
+              <button class="w-full bg-[#2A3548] hover:bg-[#1F2A3C] text-[#D8E3FB] font-semibold py-3 px-6 rounded-xl transition-colors border border-white/5 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">refresh</span>
+                Retake Pretest
+              </button>
+            </div>
+
+          </div>
+        `;
+      }
+
+      window.onload = () => {
+        loadDetail('calc');
+      };
+    </script>
+  </body>
+</html>

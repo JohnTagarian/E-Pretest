@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Subject Detail - E-Pretest</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#c9c6c5",
+              "on-secondary-fixed": "#1c1b1b",
+              "secondary-container": "#484646",
+              "on-tertiary": "#313030",
+              "on-surface": "#e6e2e1",
+              "primary-container": "#0c0b0b",
+              "on-primary-fixed-variant": "#484646",
+              "error-container": "#93000a",
+              "surface-variant": "#363434",
+              "outline-variant": "#4d4545",
+              "surface": "#141313",
+              "secondary-fixed": "#e6e1e1",
+              "tertiary-fixed": "#e5e2e1",
+              "tertiary": "#c9c6c5",
+              "inverse-on-surface": "#313030",
+              "primary-fixed": "#e6e1e1",
+              "primary-fixed-dim": "#cac5c5",
+              "on-secondary-container": "#b8b4b4",
+              "surface-dim": "#141313",
+              "on-primary-container": "#7c7979",
+              "inverse-surface": "#e6e2e1",
+              "on-tertiary-fixed-variant": "#474646",
+              "on-tertiary-fixed": "#1c1b1b",
+              "on-secondary-fixed-variant": "#484646",
+              "tertiary-fixed-dim": "#c9c6c5",
+              "tertiary-container": "#0b0b0b",
+              "surface-container-lowest": "#0f0e0e",
+              "secondary": "#c9c6c5",
+              "on-error": "#690005",
+              "surface-bright": "#3a3939",
+              "on-error-container": "#ffdad6",
+              "background": "#081425",
+              "outline": "#998e8f",
+              "primary": "#cac5c5",
+              "surface-container-high": "#2b2a2a",
+              "inverse-primary": "#605e5d",
+              "surface-tint": "#cac5c5",
+              "on-primary-fixed": "#1d1b1b",
+              "surface-container-highest": "#363434",
+              "surface-container": "#201f1f",
+              "on-background": "#e6e2e1",
+              "on-tertiary-container": "#7b7979",
+              "on-secondary": "#313030",
+              "error": "#ffb4ab",
+              "on-primary": "#323030",
+              "surface-container-low": "#111C2D",
+              "on-surface-variant": "#d0c4c4"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #081425;
+            color: #D8E3FB;
+        }
+        .glass-panel {
+            background: rgba(47, 58, 76, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-on-primary-container selection:text-white">
+<!-- TopNavBar -->
+<header
+      class="flex justify-between items-center w-full px-6 h-16 z-50 bg-[#111C2D] no-border font-['Inter'] antialiased tracking-tight text-[#D8E3FB]"
+    >
+      <div class="flex items-center gap-8">
+        <span class="text-xl font-bold tracking-tighter text-[#FB5C0C]"
+          >E-Pretest</span
+        >
+        <nav class="hidden md:flex gap-6 items-center">
+          <a
+            class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200"
+            href="mainpage.html"
+            >Dashboard</a
+          >
+          <a
+            class="text-[#FB5C0C] font-semibold border-b-2 border-[#FB5C0C] pb-0.5"
+            href="subjectpage.html"
+            >Subjects</a
+          >
+          <a
+            class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200"
+            href="history.html"
+            >History</a
+          >
+          <a
+            class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200"
+            href="archivepage.html"
+            >Archive</a
+          >
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <button
+          class="p-2 rounded-full hover:bg-[#2A3548] transition-colors relative"
+        >
+          <span class="material-symbols-outlined" data-icon="notifications"
+            >notifications</span
+          >
+          <span
+            class="absolute top-2 right-2 w-2 h-2 bg-[#FB5C0C] rounded-full"
+          ></span>
+        </button>
+        <div class="flex items-center gap-3 pl-2">
+          <div class="text-right hidden sm:block">
+            <p class="text-xs font-bold">Academic Scholar</p>
+            <p class="text-[10px] opacity-50">Scholar Profile</p>
+          </div>
+          <img
+            alt="User Scholar Profile"
+            class="w-10 h-10 rounded-full border border-outline-variant/20"
+            data-alt="Close up portrait of a male student"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOAugRPYoKnnMU_7G4odzEynhlwniW1xQqdWQ8Ot1t0VMbvDSv7UGTaUm7MUUdDnQ-v4UNCCtFkY_PBrSLjV031bqzIBfeyXy8bR27n_xDYn4VdejrNUFVzuU12PD2BLRo_UQ6_B2UhGwPbf7NaT5Ek5TjosXpraTo5-5XfrroKq64IqVyqzxZKIr6V_Yp4GcbtRZMmaWDFIkG3y0KCmj1vFbuCwVjXIht2Ys3t7y06YRxIfDD5pO5eiBCmZq2AQ5ZzLEdcl8DvIWg"
+          />
+        </div>
+      </div>
+    </header>
+<main class="max-w-[1440px] mx-auto px-8 py-10 grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Left Column: Main Content -->
+<div class="md:col-span-8 space-y-8">
+<!-- Subject Header Card -->
+<section class="bg-[#111C2D] rounded-xl p-8 relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex items-center gap-3 text-[#FB5C0C] mb-4">
+<span class="material-symbols-outlined text-sm" data-icon="school">school</span>
+<span class="font-label text-xs tracking-widest uppercase">Subject Identifier</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-black text-[#D8E3FB] tracking-tight mb-2">Calculus II</h1>
+<p class="text-xl text-[#D8E3FB]/40 font-mono tracking-wider">0305xxxx</p>
+</div>
+<div class="absolute top-0 right-0 w-64 h-full opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[180px] -mr-12 -mt-8" data-icon="functions">functions</span>
+</div>
+</section>
+<!-- Course Content List -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-[#D8E3FB]">เนื้อหารายวิชา</h2>
+<span class="text-xs text-[#D8E3FB]/40 font-label tracking-widest uppercase">12 Topics Available</span>
+</div>
+<div class="grid gap-3">
+<!-- Topic Items -->
+<button class="flex items-center justify-between w-full bg-[#111C2D] hover:bg-[#2A3548] p-5 rounded-xl transition-all duration-200 group text-left">
+<div class="flex items-center gap-5">
+<span class="text-[#FB5C0C] font-black text-lg opacity-50 group-hover:opacity-100">01</span>
+<span class="text-[#D8E3FB] font-semibold text-lg">ดิฟลูกโซ่</span>
+</div>
+<span class="material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#FB5C0C] transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between w-full bg-[#111C2D] hover:bg-[#2A3548] p-5 rounded-xl transition-all duration-200 group text-left">
+<div class="flex items-center gap-5">
+<span class="text-[#FB5C0C] font-black text-lg opacity-50 group-hover:opacity-100">02</span>
+<span class="text-[#D8E3FB] font-semibold text-lg">อินทิเกรตเบื้องต้น</span>
+</div>
+<span class="material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#FB5C0C] transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between w-full bg-[#111C2D] hover:bg-[#2A3548] p-5 rounded-xl transition-all duration-200 group text-left">
+<div class="flex items-center gap-5">
+<span class="text-[#FB5C0C] font-black text-lg opacity-50 group-hover:opacity-100">03</span>
+<span class="text-[#D8E3FB] font-semibold text-lg">การประยุกต์ใช้อนุพันธ์</span>
+</div>
+<span class="material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#FB5C0C] transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between w-full bg-[#111C2D] hover:bg-[#2A3548] p-5 rounded-xl transition-all duration-200 group text-left">
+<div class="flex items-center gap-5">
+<span class="text-[#FB5C0C] font-black text-lg opacity-50 group-hover:opacity-100">04</span>
+<span class="text-[#D8E3FB] font-semibold text-lg">พิกัดเชิงขั้ว</span>
+</div>
+<span class="material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#FB5C0C] transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between w-full bg-[#111C2D] hover:bg-[#2A3548] p-5 rounded-xl transition-all duration-200 group text-left">
+<div class="flex items-center gap-5">
+<span class="text-[#FB5C0C] font-black text-lg opacity-50 group-hover:opacity-100">05</span>
+<span class="text-[#D8E3FB] font-semibold text-lg">อนุกรมอนันต์</span>
+</div>
+<span class="material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#FB5C0C] transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar -->
+<div class="md:col-span-4 space-y-6">
+<!-- Primary CTA -->
+<button onclick="window.location.href='test_page.html'" class="w-full bg-[#FB5C0C] hover:bg-[#FF732E] text-white py-6 rounded-xl font-black text-xl flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-[#FB5C0C]/10 active:scale-95">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                สร้างข้อสอบ
+            </button>
+<!-- History Section -->
+<div class="bg-[#111C2D] rounded-xl flex flex-col h-fit">
+<div class="p-6 border-b border-[#2A3548]/30">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-lg font-bold text-[#D8E3FB]">History Test</h3>
+<span class="material-symbols-outlined text-[#FB5C0C]" data-icon="history">history</span>
+</div>
+<p class="text-xs text-[#D8E3FB]/40">บันทึกการทำแบบทดสอบล่าสุด</p>
+</div>
+<div class="p-4 space-y-4">
+<!-- History Item 1 -->
+<div class="p-4 rounded-xl bg-[#081425]/50 border border-[#2A3548]/20">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold text-[#D8E3FB]">ดิฟลูกโซ่</span>
+<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-bold">PASSED</span>
+</div>
+<div class="flex items-center gap-4 text-[11px] text-[#D8E3FB]/40">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="calendar_today">calendar_today</span>
+                                24 Oct 2023
+                            </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span>
+                                14:30 น.
+                            </div>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="p-4 rounded-xl bg-[#081425]/50 border border-[#2A3548]/20">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold text-[#D8E3FB]">อินทิเกรตเบื้องต้น</span>
+<span class="px-2 py-0.5 rounded text-[10px] bg-red-500/20 text-red-400 font-bold">FAILED</span>
+</div>
+<div class="flex items-center gap-4 text-[11px] text-[#D8E3FB]/40">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="calendar_today">calendar_today</span>
+                                22 Oct 2023
+                            </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span>
+                                09:15 น.
+                            </div>
+</div>
+</div>
+<!-- History Item 3 -->
+<div class="p-4 rounded-xl bg-[#081425]/50 border border-[#2A3548]/20">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold text-[#D8E3FB]">ดิฟลูกโซ่</span>
+<span class="px-2 py-0.5 rounded text-[10px] bg-[#2A3548] text-[#D8E3FB]/60 font-bold">PENDING</span>
+</div>
+<div class="flex items-center gap-4 text-[11px] text-[#D8E3FB]/40">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="calendar_today">calendar_today</span>
+                                20 Oct 2023
+                            </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span>
+                                16:45 น.
+                            </div>
+</div>
+</div>
+</div>
+<button class="m-4 p-3 rounded-lg border border-[#2A3548] text-xs font-bold text-[#D8E3FB]/60 hover:bg-[#2A3548] transition-colors uppercase tracking-widest">
+                    View Full Archive
+                </button>
+</div>
+<!-- Stats Mini Card -->
+<div class="glass-panel rounded-xl p-6 border border-[#2A3548]/20">
+<h4 class="text-xs font-label uppercase tracking-widest text-[#D8E3FB]/40 mb-4">Current Mastery</h4>
+<div class="flex items-end gap-2 mb-2">
+<span class="text-3xl font-black text-[#FB5C0C]">68%</span>
+<span class="text-xs text-[#D8E3FB]/40 mb-1.5">Average Score</span>
+</div>
+<div class="w-full bg-[#081425] h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-[#797676] to-[#FB5C0C] h-full w-[68%]"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation Suppressed for Focus - Desktop navigation in TopAppBar -->
+</body></html>

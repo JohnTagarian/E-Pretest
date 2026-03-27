@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>E-Pretest - Advanced Calculus II</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#363434",
+                        "secondary-container": "#484646",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-surface-variant": "#d0c4c4",
+                        "on-primary-fixed-variant": "#484646",
+                        "secondary-fixed": "#e6e1e1",
+                        "secondary-fixed-dim": "#c9c6c5",
+                        "primary": "#cac5c5",
+                        "surface-container-high": "#2b2a2a",
+                        "tertiary-fixed-dim": "#c9c6c5",
+                        "tertiary-fixed": "#e5e2e1",
+                        "outline": "#998e8f",
+                        "surface-variant": "#363434",
+                        "surface-tint": "#cac5c5",
+                        "surface": "#141313",
+                        "surface-bright": "#3a3939",
+                        "on-tertiary": "#313030",
+                        "on-secondary-fixed-variant": "#484646",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-tertiary-fixed-variant": "#474646",
+                        "surface-container-lowest": "#0f0e0e",
+                        "surface-container-low": "#1c1b1b",
+                        "inverse-surface": "#e6e2e1",
+                        "on-primary-container": "#7c7979",
+                        "on-background": "#e6e2e1",
+                        "background": "#141313",
+                        "error": "#ffb4ab",
+                        "surface-container": "#201f1f",
+                        "primary-fixed-dim": "#cac5c5",
+                        "on-primary-fixed": "#1d1b1b",
+                        "tertiary-container": "#0b0b0b",
+                        "on-secondary-container": "#b8b4b4",
+                        "on-error": "#690005",
+                        "on-surface": "#e6e2e1",
+                        "outline-variant": "#4d4545",
+                        "tertiary": "#c9c6c5",
+                        "secondary": "#c9c6c5",
+                        "inverse-primary": "#605e5d",
+                        "surface-dim": "#141313",
+                        "primary-container": "#0c0b0b",
+                        "on-secondary": "#313030",
+                        "on-tertiary-container": "#7b7979",
+                        "on-primary": "#323030",
+                        "primary-fixed": "#e6e1e1",
+                        "inverse-on-surface": "#313030"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #081425;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2A3548;
+            border-radius: 10px;
+            border: 2px solid #081425;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FB5C0C;
+        }
+    </style>
+</head>
+
+<body class="bg-[#081425] text-[#D8E3FB] font-['Inter'] antialiased overflow-hidden">
+    <!-- TopNavBar -->
+    <header
+        class="fixed top-0 w-full z-50 bg-[#111C2D] flex justify-between items-center px-8 py-4 border-b border-[#2A3548]">
+        <div class="flex items-center gap-4">
+            <span class="text-xl font-bold tracking-tighter text-[#FB5C0C]">E-Pretest</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <button
+                class="material-symbols-outlined text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity">help</button>
+            <button
+                class="material-symbols-outlined text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity">settings</button>
+            <div class="w-10 h-10 rounded-full border-2 border-[#2A3548] overflow-hidden">
+                <img alt="Student Profile" class="w-full h-full object-cover"
+                    data-alt="Student profile avatar for academic system"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuADX5XOiWOlg6aJYicca6LBQTMwSIxEUGOqeuBo0Wb0QVUtklyhWwsEgzGh2dzDWUkqqmUhNhiVsAAdgQHGZkZj6Qp1qBS1mtu0tIRjMg89e5gO5AX1yQgU8i4uXYigl-SmaQMcTmcX0gOgafnywviEg_m3ebFLDT4s5aFlDN1zH_Hd438k-8o6wAgNtgTSOnaa66e9QqcTsrAl5aWwJEwrHf7GK_5NjyYhItLnZebyRddWAYXDRxZ7qv-QNt7LBMzzJwLnHnZJbv3Q" />
+            </div>
+        </div>
+    </header>
+    <main class="pt-20 h-screen flex">
+        <!-- Main Content Area: Stretched to fill remaining space -->
+        <section class="flex-1 flex flex-col min-w-0">
+            <div class="flex-1 overflow-y-auto px-12 py-10 scroll-smooth">
+                <header class="mb-12 max-w-5xl mx-auto">
+                    <div class="flex justify-between items-end border-b border-[#2A3548] pb-6">
+                        <div>
+                            <h1 class="text-3xl font-extrabold tracking-tight text-[#D8E3FB]">Advanced Calculus II</h1>
+                            <p class="text-[#797676] font-medium mt-1">COURSE ID: 030500124 • SEMESTER 2</p>
+                        </div>
+                        <div class="flex items-center gap-4 text-right">
+                            <span class="material-symbols-outlined text-[#FB5C0C] text-3xl">timer</span>
+                            <div>
+                                <span
+                                    class="text-[10px] tracking-[0.2em] uppercase text-[#FB5C0C] font-bold block mb-0.5">Time
+                                    Remaining</span>
+                                <div class="text-4xl font-mono font-bold text-[#D8E3FB] tracking-tighter">10:00</div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <!-- Question List -->
+                <div class="space-y-16 max-w-5xl mx-auto pb-32">
+                    <!-- Question 1 -->
+                    <div class="bg-[#111C2D]/30 p-8 rounded-2xl border border-[#2A3548]/50 space-y-6">
+                        <div class="flex items-center gap-4">
+                            <span class="bg-[#FB5C0C] text-white px-4 py-1.5 rounded-lg text-sm font-bold">ข้อที่
+                                1</span>
+                            <span class="h-[1px] flex-1 bg-[#2A3548]"></span>
+                        </div>
+                        <div class="text-xl leading-relaxed text-[#D8E3FB] font-medium">
+                            Determine the value of the integral <span class="italic">∫ x² eˣ dx</span>. Which of the
+                            following represents the correct application of integration by parts?
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">1</span>
+                                <span class="text-[#d0c4c4]">x²eˣ - 2xeˣ + 2eˣ + C</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">2</span>
+                                <span class="text-[#d0c4c4]">x²eˣ + 2xeˣ + 2eˣ + C</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#1F2A3C] border-2 border-[#FB5C0C] rounded-xl group text-left shadow-lg shadow-[#FB5C0C]/5">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#FB5C0C] text-white mr-4 text-sm font-bold">3</span>
+                                <span class="text-[#D8E3FB] font-semibold">eˣ(x² - 2x + 2) + C</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">4</span>
+                                <span class="text-[#d0c4c4]">x²eˣ - ∫ 2xeˣ dx</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="bg-[#111C2D]/30 p-8 rounded-2xl border border-[#2A3548]/50 space-y-6">
+                        <div class="flex items-center gap-4">
+                            <span class="bg-[#2A3548] text-[#D8E3FB] px-4 py-1.5 rounded-lg text-sm font-bold">ข้อที่
+                                2</span>
+                            <span class="h-[1px] flex-1 bg-[#2A3548]"></span>
+                        </div>
+                        <div class="text-xl leading-relaxed text-[#D8E3FB] font-medium">
+                            In vector calculus, if <span class="font-mono text-[#FB5C0C]">F</span> is a conservative
+                            vector field, which of the following statements must be true regarding the line integral of
+                            <span class="font-mono text-[#FB5C0C]">F</span> over a closed curve <span
+                                class="italic">C</span>?
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">1</span>
+                                <span class="text-[#d0c4c4]">The integral is equal to the area of the region.</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">2</span>
+                                <span class="text-[#d0c4c4]">The integral depends only on the path C.</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">3</span>
+                                <span class="text-[#d0c4c4]">The integral is always equal to zero.</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">4</span>
+                                <span class="text-[#d0c4c4]">The curl of F must be a non-zero constant.</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="bg-[#111C2D]/30 p-8 rounded-2xl border border-[#2A3548]/50 space-y-6">
+                        <div class="flex items-center gap-4">
+                            <span class="bg-[#2A3548] text-[#D8E3FB] px-4 py-1.5 rounded-lg text-sm font-bold">ข้อที่
+                                3</span>
+                            <span class="h-[1px] flex-1 bg-[#2A3548]"></span>
+                        </div>
+                        <div class="text-xl leading-relaxed text-[#D8E3FB] font-medium">
+                            What is the limit of <span class="italic">sin(x)/x</span> as <span class="italic">x</span>
+                            approaches 0?
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">1</span>
+                                <span class="text-[#d0c4c4]">0</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">2</span>
+                                <span class="text-[#d0c4c4]">Infinity</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">3</span>
+                                <span class="text-[#d0c4c4]">1</span>
+                            </button>
+                            <button
+                                class="flex items-center p-5 bg-[#111C2D] border border-[#2A3548] hover:border-[#FB5C0C]/50 hover:bg-[#1F2A3C] transition-all rounded-xl group text-left">
+                                <span
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#2A3548] group-hover:bg-[#FB5C0C] group-hover:text-white transition-colors mr-4 text-sm font-bold">4</span>
+                                <span class="text-[#d0c4c4]">Does not exist</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- RIGHT COLUMN (Fixed/Sticky Navigation and Submit) -->
+        <section class="w-[400px] bg-[#111C2D] flex flex-col border-l border-[#2A3548] h-full">
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="mb-10">
+                    <h3 class="text-sm tracking-[0.2em] uppercase font-black text-[#797676] mb-8">จำนวนข้อ (Question
+                        Navigator)</h3>
+                    <div class="grid grid-cols-4 gap-4">
+                        <!-- Nav Item: Active -->
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#FB5C0C] text-white font-bold text-base shadow-lg shadow-[#FB5C0C]/30 border-2 border-white/20 active:scale-95 transition-all">1.</button>
+                        <!-- Nav Item: Answered -->
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#2A3548] text-[#D8E3FB] font-bold text-base border-2 border-transparent hover:bg-[#1F2A3C] hover:border-[#FB5C0C]/30 transition-all active:scale-95">2.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#2A3548] text-[#D8E3FB] font-bold text-base border-2 border-transparent hover:bg-[#1F2A3C] hover:border-[#FB5C0C]/30 transition-all active:scale-95">3.</button>
+                        <!-- Nav Item: Flagged -->
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#111C2D] border-2 border-[#FB5C0C] text-[#FB5C0C] font-bold text-base hover:bg-[#FB5C0C]/10 transition-all active:scale-95">4.</button>
+                        <!-- Loop for empty items -->
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] hover:text-[#D8E3FB] transition-all active:scale-95">5.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">6.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">7.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">8.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">9.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">10.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">11.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">12.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">13.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">14.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">15.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">16.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">17.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">18.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">19.</button>
+                        <button
+                            class="aspect-square flex items-center justify-center rounded-full bg-[#081425] text-[#797676] font-bold text-base border border-[#2A3548]/30 hover:bg-[#1F2A3C] transition-all active:scale-95">20.</button>
+                    </div>
+                </div>
+                <div class="space-y-4 py-8 border-t border-[#2A3548]">
+                    <div class="bg-[#1F2A3C] rounded-xl p-5 border border-[#2A3548]/50">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-[#D8E3FB]">Progress</span>
+                            <span class="text-xs font-bold text-[#FB5C0C]">15%</span>
+                        </div>
+                        <div class="h-2 w-full bg-[#081425] rounded-full overflow-hidden">
+                            <div class="h-full bg-[#FB5C0C] w-[15%] rounded-full shadow-[0_0_10px_rgba(251,92,12,0.5)]">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex items-center gap-2 p-3 bg-[#081425]/50 rounded-lg border border-[#2A3548]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#FB5C0C]"></div>
+                            <span class="text-[10px] uppercase font-bold text-[#797676]">Answered</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-3 bg-[#081425]/50 rounded-lg border border-[#2A3548]/30">
+                            <div class="w-3 h-3 rounded-full border border-[#2A3548]"></div>
+                            <span class="text-[10px] uppercase font-bold text-[#797676]">Remaining</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Submit Button fixed at bottom of right sidebar -->
+            <div class="p-8 bg-[#111C2D] border-t border-[#2A3548] mt-auto">
+                <button onclick="window.location.href='test_result_page.html'"
+                    class="w-full bg-[#FB5C0C] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#ff6d24] transition-all active:scale-[0.98] shadow-lg shadow-[#FB5C0C]/20 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">send</span>
+                    Submit Exam
+                </button>
+            </div>
+        </section>
+    </main>
+    <!-- Bottom Action Bar (Contextual Focus Drawer) -->
+    <div
+        class="fixed bottom-8 left-[calc(50%-200px)] -translate-x-1/2 bg-[#1F2A3C]/90 backdrop-blur-xl border border-[#2A3548] px-8 py-3.5 rounded-full flex items-center gap-8 shadow-2xl z-50">
+        <button class="flex items-center gap-2 text-[#D8E3FB] hover:text-[#FB5C0C] transition-colors group">
+            <span class="material-symbols-outlined text-xl">chevron_left</span>
+            <span class="text-sm font-bold">Previous</span>
+        </button>
+        <div class="w-[1px] h-5 bg-[#2A3548]"></div>
+        <div class="text-xs font-bold tracking-[0.15em] text-[#797676] uppercase">Question 1 of 20</div>
+        <div class="w-[1px] h-5 bg-[#2A3548]"></div>
+        <button class="flex items-center gap-2 text-[#D8E3FB] hover:text-[#FB5C0C] transition-colors group">
+            <span class="text-sm font-bold">Next</span>
+            <span class="material-symbols-outlined text-xl">chevron_right</span>
+        </button>
+    </div>
+</body>
+
+</html>

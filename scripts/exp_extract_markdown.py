@@ -3,7 +3,7 @@
 
 from langchain_pymupdf4llm import PyMuPDF4LLMLoader
 
-file_path = "data/Ch1.pdf"
+file_path = "data/Ch1_SE.pdf"
 
 loader = PyMuPDF4LLMLoader(file_path)
 

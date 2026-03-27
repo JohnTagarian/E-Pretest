@@ -1,0 +1,263 @@
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>E-Pretest - Subject Selection</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              background: "#081425",
+              "accent-orange": "#FB5C0C",
+            },
+            fontFamily: {
+              headline: ["Inter"],
+              body: ["Inter"],
+              label: ["Inter"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      body {
+        background-color: #081425;
+        color: #d8e3fb;
+        font-family: "Inter", sans-serif;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+
+  <body class="antialiased selection:bg-accent-orange/30">
+    <header class="flex justify-between items-center w-full px-6 h-16 z-50 bg-[#111C2D] no-border font-['Inter'] antialiased tracking-tight text-[#D8E3FB]">
+      <div class="flex items-center gap-8">
+        <span class="text-xl font-bold tracking-tighter text-[#FB5C0C]">E-Pretest</span>
+        <nav class="hidden md:flex gap-6 items-center">
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="mainpage.html">Dashboard</a>
+          <a class="text-[#FB5C0C] font-semibold border-b-2 border-[#FB5C0C] pb-0.5" href="#">Subjects</a>
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="history.html">History</a>
+          <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="archivepage.html">Archive</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="p-2 rounded-full hover:bg-[#2A3548] transition-colors relative">
+          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-[#FB5C0C] rounded-full"></span>
+        </button>
+        <div class="flex items-center gap-3 pl-2">
+          <div class="text-right hidden sm:block">
+            <p class="text-xs font-bold">Academic Scholar</p>
+            <p class="text-[10px] opacity-50">Scholar Profile</p>
+          </div>
+          <img alt="User Scholar Profile" class="w-10 h-10 rounded-full border border-[#998e8f]/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOAugRPYoKnnMU_7G4odzEynhlwniW1xQqdWQ8Ot1t0VMbvDSv7UGTaUm7MUUdDnQ-v4UNCCtFkY_PBrSLjV031bqzIBfeyXy8bR27n_xDYn4VdejrNUFVzuU12PD2BLRo_UQ6_B2UhGwPbf7NaT5Ek5TjosXpraTo5-5XfrroKq64IqVyqzxZKIr6V_Yp4GcbtRZMmaWDFIkG3y0KCmj1vFbuCwVjXIht2Ys3t7y06YRxIfDD5pO5eiBCmZq2AQ5ZzLEdcl8DvIWg" />
+        </div>
+      </div>
+    </header>
+
+    <main class="pt-10 pb-12 px-8 max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 h-[calc(100vh-1rem)]">
+      
+      <section class="md:col-span-4 lg:col-span-3 flex flex-col h-full overflow-hidden">
+        <h2 class="text-xl font-bold tracking-tight mb-4 text-[#D8E3FB]">Library Subject</h2>
+        
+        <div class="mb-6">
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm opacity-40">search</span>
+            <input class="w-full bg-[#111C2D] border-none rounded-lg py-2.5 pl-8 text-sm focus:ring-1 focus:ring-[#FB5C0C] placeholder:opacity-40 text-[#D8E3FB]" placeholder="Search resources..." type="text" />
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-4 pr-2 hide-scrollbar">
+          <button onclick="selectSubject(this)" data-subject="math" class="subject-btn w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98]">
+            <div class="flex items-center gap-4">
+              <div class="icon-container w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#D8E3FB]/60">
+                <span class="material-symbols-outlined text-3xl">functions</span>
+              </div>
+              <span class="subject-text font-medium text-lg text-[#D8E3FB]/80">Mathematics</span>
+            </div>
+            <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50">chevron_right</span>
+          </button>
+
+          <button onclick="selectSubject(this)" data-subject="computer" class="subject-btn w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98]">
+            <div class="flex items-center gap-4">
+              <div class="icon-container w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#D8E3FB]/60">
+                <span class="material-symbols-outlined text-3xl">computer</span>
+              </div>
+              <span class="subject-text font-medium text-lg text-[#D8E3FB]/80">Computer</span>
+            </div>
+            <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50">chevron_right</span>
+          </button>
+
+          <button onclick="selectSubject(this)" data-subject="physics" class="subject-btn w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98]">
+            <div class="flex items-center gap-4">
+              <div class="icon-container w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#D8E3FB]/60">
+                <span class="material-symbols-outlined text-3xl">science</span>
+              </div>
+              <span class="subject-text font-medium text-lg text-[#D8E3FB]/80">Physics</span>
+            </div>
+            <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50">chevron_right</span>
+          </button>
+
+          <button onclick="selectSubject(this)" data-subject="chemistry" class="subject-btn w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98]">
+            <div class="flex items-center gap-4">
+              <div class="icon-container w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#D8E3FB]/60">
+                <span class="material-symbols-outlined text-3xl">biotech</span>
+              </div>
+              <span class="subject-text font-medium text-lg text-[#D8E3FB]/80">Chemistry</span>
+            </div>
+            <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50">chevron_right</span>
+          </button>
+
+          <button onclick="selectSubject(this)" data-subject="english" class="subject-btn w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98]">
+            <div class="flex items-center gap-4">
+              <div class="icon-container w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#D8E3FB]/60">
+                <span class="material-symbols-outlined text-3xl">language</span>
+              </div>
+              <span class="subject-text font-medium text-lg text-[#D8E3FB]/80">English</span>
+            </div>
+            <span class="chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50">chevron_right</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="md:col-span-8 lg:col-span-9 flex flex-col h-full overflow-hidden bg-[#111C2D]/30 rounded-2xl border border-white/5 p-6">
+        
+        <div id="empty-state" class="flex flex-col items-center justify-center h-full text-[#D8E3FB]/40">
+          <span class="material-symbols-outlined text-6xl mb-4 opacity-50">library_books</span>
+          <p class="text-lg">Please select a subject from the library on the left</p>
+        </div>
+
+        <div id="content-state" class="hidden flex-col h-full overflow-hidden">
+          <div class="flex items-center justify-between mb-6">
+            <h2 id="right-subject-title" class="text-xl font-bold tracking-tight text-[#D8E3FB]">Available Subject</h2>
+            <span id="right-module-count" class="text-xs font-bold uppercase tracking-widest text-[#D8E3FB]/40">0 Modules Found</span>
+          </div>
+          
+          <div id="module-list" class="flex-1 overflow-y-auto space-y-4 pr-2 hide-scrollbar">
+            </div>
+        </div>
+
+      </section>
+    </main>
+
+    <script>
+      // ฐานข้อมูลจำลอง (สามารถแก้ชื่อวิชา ไอคอน หรือลิงก์ได้ตามต้องการ)
+      const subjectData = {
+        math: {
+          title: "Mathematics",
+          count: "7 Modules Found",
+          modules: [
+            { id: "030513101", name: "Calculus I", icon: "calculate", link: "subject_detail.html" },
+            { id: "030513102", name: "Calculus II", icon: "calculate", link: "#" },
+            { id: "030513103", name: "Calculus III", icon: "calculate", link: "#" },
+            { id: "030513201", name: "Linear Algebra", icon: "grid_4x4", link: "#" },
+            { id: "030513401", name: "Statistics & Probability", icon: "bar_chart", link: "#" },
+            { id: "030513505", name: "Discrete Mathematics", icon: "data_exploration", link: "#" },
+            { id: "030513608", name: "Differential Equations", icon: "timeline", link: "#" }
+          ]
+        },
+        computer: {
+          title: "Computer",
+          count: "3 Modules Found",
+          modules: [
+            { id: "030513301", name: "Python Programming", icon: "terminal", link: "#" },
+            { id: "030513302", name: "Data Structures", icon: "account_tree", link: "#" },
+            { id: "030513303", name: "Database Systems", icon: "database", link: "#" }
+          ]
+        },
+        physics: {
+          title: "Physics",
+          count: "2 Modules Found",
+          modules: [
+            { id: "030514101", name: "General Physics I", icon: "bolt", link: "#" },
+            { id: "030514102", name: "Quantum Mechanics", icon: "flare", link: "#" }
+          ]
+        },
+        chemistry: {
+          title: "Chemistry",
+          count: "1 Module Found",
+          modules: [
+            { id: "030515101", name: "Organic Chemistry", icon: "science", link: "#" }
+          ]
+        },
+        english: {
+          title: "English",
+          count: "2 Modules Found",
+          modules: [
+            { id: "030516101", name: "Academic Writing", icon: "edit_document", link: "#" },
+            { id: "030516102", name: "Public Speaking", icon: "mic", link: "#" }
+          ]
+        }
+      };
+
+      function selectSubject(clickedBtn) {
+        // --- ส่วนที่ 1: จัดการหน้าตาปุ่มฝั่งซ้าย ---
+        const allBtns = document.querySelectorAll('.subject-btn');
+        
+        // รีเซ็ตทุกปุ่มให้เป็นสถานะ Inactive
+        allBtns.forEach(btn => {
+          btn.className = "subject-btn w-full flex items-center justify-between p-5 rounded-xl bg-[#111C2D] hover:bg-[#1F2A3C] transition-all group active:scale-[0.98]";
+          btn.querySelector('.icon-container').className = "icon-container w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#D8E3FB]/60";
+          btn.querySelector('.subject-text').className = "subject-text font-medium text-lg text-[#D8E3FB]/80";
+          btn.querySelector('.chevron-icon').className = "chevron-icon material-symbols-outlined text-[#D8E3FB]/20 group-hover:text-[#D8E3FB]/50";
+        });
+
+        // ตั้งสถานะ Active ให้ปุ่มที่เพิ่งถูกคลิก
+        clickedBtn.className = "subject-btn w-full flex items-center justify-between p-5 rounded-xl bg-[#2A3548] border-r-4 border-[#FB5C0C] transition-all group active:scale-[0.98]";
+        clickedBtn.querySelector('.icon-container').className = "icon-container w-12 h-12 rounded-lg bg-[#FB5C0C]/10 flex items-center justify-center text-[#FB5C0C]";
+        clickedBtn.querySelector('.subject-text').className = "subject-text font-semibold text-lg text-[#FB5C0C]";
+        clickedBtn.querySelector('.chevron-icon').className = "chevron-icon material-symbols-outlined text-[#FB5C0C]";
+
+        // --- ส่วนที่ 2: ดึงข้อมูลมาแสดงฝั่งขวา ---
+        const subjectKey = clickedBtn.getAttribute('data-subject');
+        const data = subjectData[subjectKey];
+
+        if (data) {
+          // ซ่อน Empty State และแสดง Content State
+          document.getElementById('empty-state').classList.add('hidden');
+          const contentState = document.getElementById('content-state');
+          contentState.classList.remove('hidden');
+          contentState.classList.add('flex'); // ใช้ flex เพื่อให้โครงสร้างทำงานเหมือนเดิม
+
+          // อัปเดต Title และ Count
+          document.getElementById('right-subject-title').innerText = `Available: ${data.title}`;
+          document.getElementById('right-module-count').innerText = data.count;
+
+          // วนลูปสร้างการ์ดโมดูล
+          const moduleContainer = document.getElementById('module-list');
+          moduleContainer.innerHTML = data.modules.map(mod => `
+            <div class="flex items-center justify-between p-6 bg-[#111C2D] rounded-2xl hover:bg-[#111C2D]/80 transition-all border border-white/5">
+              <div class="flex items-center gap-6">
+                <div class="p-3 bg-[#2A3548] rounded-xl">
+                  <span class="material-symbols-outlined text-[#FB5C0C] text-2xl">${mod.icon}</span>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-[#D8E3FB]">${mod.name}</h3>
+                  <p class="text-sm font-mono text-[#D8E3FB]/40">ID: ${mod.id}</p>
+                </div>
+              </div>
+              <button onclick="window.location.href='${mod.link}'" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#FB5C0C] text-white shadow-lg shadow-[#FB5C0C]/20 hover:scale-105 active:scale-95 transition-transform">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          `).join('');
+        }
+      }
+    </script>
+  </body>
+</html>

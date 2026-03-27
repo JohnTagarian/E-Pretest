@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Test Results | E-Pretest</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-tint": "#cac5c5",
+                        "surface-container": "#201f1f",
+                        "on-error": "#690005",
+                        "background": "#081425",
+                        "on-surface-variant": "#d0c4c4",
+                        "surface-variant": "#363434",
+                        "outline-variant": "#4d4545",
+                        "primary-fixed": "#e6e1e1",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-tertiary-fixed-variant": "#474646",
+                        "tertiary-fixed-dim": "#c9c6c5",
+                        "surface-container-highest": "#2A3548",
+                        "primary": "#cac5c5",
+                        "on-secondary-fixed-variant": "#484646",
+                        "surface": "#081425",
+                        "inverse-primary": "#605e5d",
+                        "on-primary-container": "#7c7979",
+                        "error-container": "#93000a",
+                        "surface-bright": "#2F3A4C",
+                        "secondary-fixed-dim": "#c9c6c5",
+                        "on-primary-fixed-variant": "#484646",
+                        "on-background": "#D8E3FB",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "inverse-surface": "#e6e2e1",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-primary": "#323030",
+                        "tertiary-container": "#0b0b0b",
+                        "primary-container": "#FB5C0C",
+                        "surface-container-low": "#111C2D",
+                        "on-primary-fixed": "#1d1b1b",
+                        "inverse-on-surface": "#313030",
+                        "on-tertiary": "#313030",
+                        "surface-dim": "#081425",
+                        "primary-fixed-dim": "#797676",
+                        "on-secondary-container": "#b8b4b4",
+                        "surface-container-lowest": "#040E1F",
+                        "error": "#ffb4ab",
+                        "outline": "#998e8f",
+                        "secondary-fixed": "#e6e1e1",
+                        "secondary": "#c9c6c5",
+                        "on-tertiary-container": "#7b7979",
+                        "on-secondary": "#313030",
+                        "secondary-container": "#484646",
+                        "tertiary": "#c9c6c5",
+                        "on-surface": "#D8E3FB",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#1F2A3C",
+                        "accent-orange": "#FB5C0C"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #081425;
+            color: #D8E3FB;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-panel {
+            background: rgba(31, 42, 60, 0.6);
+            backdrop-filter: blur(12px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #081425;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2A3548;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #FB5C0C;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-accent-orange selection:text-white">
+    <!-- Top Navigation Bar (Updated from SCREEN_25) -->
+    <header
+        class="fixed top-0 flex justify-between items-center w-full px-6 h-16 z-50 bg-[#111C2D] no-border font-['Inter'] antialiased tracking-tight text-[#D8E3FB]">
+        <div class="flex items-center gap-8">
+            <span class="text-xl font-bold tracking-tighter text-[#FB5C0C]">E-Pretest</span>
+            <nav class="hidden md:flex gap-6 items-center">
+                <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200"
+                    href="mainpage.html">Dashboard</a>
+                <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200"
+                    href="subjectpage.html">Subjects</a>
+                <a class="text-[#FB5C0C] font-semibold border-b-2 border-[#FB5C0C] pb-0.5" href="history.html">History</a>
+                <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200"
+                    href="archivepage.html">Archive</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="p-2 rounded-full hover:bg-[#2A3548] transition-colors relative">
+                <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-[#FB5C0C] rounded-full"></span>
+            </button>
+            <div class="flex items-center gap-3 pl-2">
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs font-bold">Academic Scholar</p>
+                    <p class="text-[10px] opacity-50">Scholar Profile</p>
+                </div>
+                <img alt="User Scholar Profile" class="w-10 h-10 rounded-full border border-outline-variant/20"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOAugRPYoKnnMU_7G4odzEynhlwniW1xQqdWQ8Ot1t0VMbvDSv7UGTaUm7MUUdDnQ-v4UNCCtFkY_PBrSLjV031bqzIBfeyXy8bR27n_xDYn4VdejrNUFVzuU12PD2BLRo_UQ6_B2UhGwPbf7NaT5Ek5TjosXpraTo5-5XfrroKq64IqVyqzxZKIr6V_Yp4GcbtRZMmaWDFIkG3y0KCmj1vFbuCwVjXIht2Ys3t7y06YRxIfDD5pO5eiBCmZq2AQ5ZzLEdcl8DvIWg" />
+            </div>
+        </div>
+    </header>
+    <main class="pt-24 pb-12 px-6 max-w-6xl mx-auto min-h-screen">
+        <!-- Summary Section (Bento Style) -->
+        <section class="mb-12">
+            <h1 class="text-3xl font-extrabold tracking-tight mb-8 text-[#D8E3FB]">Summary</h1>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Score Card -->
+                <div
+                    class="col-span-1 glass-panel p-8 rounded-xl border-l-4 border-accent-orange flex flex-col justify-center relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-5">
+                        <span class="material-symbols-outlined text-9xl" data-icon="grade">grade</span>
+                    </div>
+                    <span class="text-xs font-bold tracking-[0.15em] text-[#797676] uppercase mb-2">Final
+                        Performance</span>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-6xl font-black text-accent-orange">15</span>
+                        <span class="text-2xl font-semibold text-[#797676]">/ 20</span>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2">
+                        <div class="h-1.5 w-full bg-[#111C2D] rounded-full overflow-hidden">
+                            <div class="h-full bg-accent-orange w-[75%]"></div>
+                        </div>
+                        <span class="text-xs font-bold text-accent-orange">75%</span>
+                    </div>
+                </div>
+                <!-- Detail Card -->
+                <div class="col-span-1 md:col-span-2 bg-[#111C2D] p-8 rounded-xl flex flex-col justify-between">
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <span
+                                class="text-xs font-bold tracking-[0.15em] text-[#797676] uppercase block mb-3">Subject</span>
+                            <span class="text-xl font-bold text-[#D8E3FB]">Calculus I</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold tracking-[0.15em] text-[#797676] uppercase block mb-3">Test
+                                ID</span>
+                            <span class="text-xl font-bold text-[#D8E3FB]">0305-XC-882</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold tracking-[0.15em] text-[#797676] uppercase block mb-3">Total
+                                Questions</span>
+                            <span class="text-xl font-bold text-[#D8E3FB]">20 Items</span>
+                        </div>
+                        <div>
+                            <span
+                                class="text-xs font-bold tracking-[0.15em] text-[#797676] uppercase block mb-3">Duration</span>
+                            <span class="text-xl font-bold text-[#D8E3FB]">2 hours 00 mins</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Question List -->
+        <section>
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+                <h2 class="text-2xl font-bold tracking-tight text-[#D8E3FB]">Detailed Review</h2>
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Action Buttons moved from floating position -->
+                    <button
+                        class="flex items-center gap-2 bg-[#2A3548] hover:bg-accent-orange text-white px-4 py-1.5 rounded-lg transition-all text-[11px] font-bold uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                        Download PDF
+                    </button>
+                    <button
+                        class="flex items-center gap-2 bg-accent-orange hover:opacity-90 text-white px-4 py-1.5 rounded-lg transition-all text-[11px] font-bold uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
+                        Retake Exam
+                    </button>
+                    <div class="h-6 w-px bg-surface-container-highest mx-2 hidden sm:block"></div>
+                    <!-- Filters -->
+                    <div class="flex gap-2">
+                        <span
+                            class="px-3 py-1.5 rounded bg-[#1F2A3C] text-[10px] font-bold text-accent-orange uppercase tracking-wider">All
+                            Questions</span>
+                        <span
+                            class="px-3 py-1.5 rounded hover:bg-[#1F2A3C] text-[10px] font-bold text-[#797676] uppercase tracking-wider cursor-pointer transition-all">Incorrect
+                            Only</span>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <!-- Question 1 (Correct) -->
+                <div class="bg-[#111C2D] rounded-xl overflow-hidden">
+                    <div class="p-6 border-l-4 border-emerald-500/50">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-bold text-[#797676] uppercase tracking-widest">Question 01</span>
+                            <div class="flex items-center gap-2 text-emerald-400">
+                                <span class="material-symbols-outlined text-sm"
+                                    data-icon="check_circle">check_circle</span>
+                                <span class="text-[10px] font-bold uppercase">Correct</span>
+                            </div>
+                        </div>
+                        <p class="text-lg leading-relaxed text-[#D8E3FB] mb-6 font-medium">Evaluate the limit: $\lim_{x
+                            \to 0} \frac{\sin(x)}{x}$. Explain the significance of this limit in the context of the
+                            derivative of trigonometric functions.</p>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <div class="bg-[#081425] p-4 rounded-lg">
+                                    <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Your
+                                        Answer</span>
+                                    <p class="text-emerald-400 font-bold">1</p>
+                                </div>
+                                <div class="bg-[#081425] p-4 rounded-lg">
+                                    <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Correct
+                                        Answer</span>
+                                    <p class="text-[#D8E3FB] font-bold">1</p>
+                                </div>
+                            </div>
+                            <div class="bg-[#1F2A3C] p-6 rounded-lg">
+                                <span
+                                    class="text-[10px] font-bold text-accent-orange uppercase block mb-3 tracking-widest">Explanation</span>
+                                <p class="text-sm text-[#D8E3FB]/80 leading-relaxed mb-4">
+                                    Using L'Hôpital's Rule or the geometric squeeze theorem, the limit evaluates to 1.
+                                    This fundamental limit is crucial for proving that $\frac{d}{dx}(\sin x) = \cos x$.
+                                </p>
+                                <div class="pt-4 border-t border-[#2A3548]">
+                                    <div class="flex items-center gap-2 text-[#797676]">
+                                        <span class="material-symbols-outlined text-sm"
+                                            data-icon="menu_book">menu_book</span>
+                                        <span class="text-[10px] font-bold italic tracking-tight">Reference: Calculus I,
+                                            Page 460, Line 12</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Question 2 (Incorrect) -->
+                <div class="bg-[#111C2D] rounded-xl overflow-hidden">
+                    <div class="p-6 border-l-4 border-accent-orange/50">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-bold text-[#797676] uppercase tracking-widest">Question 02</span>
+                            <div class="flex items-center gap-2 text-accent-orange">
+                                <span class="material-symbols-outlined text-sm" data-icon="cancel">cancel</span>
+                                <span class="text-[10px] font-bold uppercase">Incorrect</span>
+                            </div>
+                        </div>
+                        <p class="text-lg leading-relaxed text-[#D8E3FB] mb-6 font-medium">Find the derivative of $f(x)
+                            = \ln(x^2 + 1)$.</p>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <div class="bg-[#081425] p-4 rounded-lg">
+                                    <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Your
+                                        Answer</span>
+                                    <p class="text-accent-orange font-bold">$1 / (x^2 + 1)$</p>
+                                </div>
+                                <div class="bg-[#081425] p-4 rounded-lg">
+                                    <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Correct
+                                        Answer</span>
+                                    <p class="text-emerald-400 font-bold">$2x / (x^2 + 1)$</p>
+                                </div>
+                            </div>
+                            <div class="bg-[#1F2A3C] p-6 rounded-lg">
+                                <span
+                                    class="text-[10px] font-bold text-accent-orange uppercase block mb-3 tracking-widest">Explanation</span>
+                                <p class="text-sm text-[#D8E3FB]/80 leading-relaxed mb-4">
+                                    The chain rule must be applied here. Let $u = x^2 + 1$. Then $f(x) = \ln(u)$, and
+                                    $f'(x) = \frac{1}{u} \cdot \frac{du}{dx}$. Since $\frac{du}{dx} = 2x$, the final
+                                    result is $\frac{2x}{x^2 + 1}$. You forgot to multiply by the derivative of the
+                                    inner function.
+                                </p>
+                                <div class="pt-4 border-t border-[#2A3548]">
+                                    <div class="flex items-center gap-2 text-[#797676]">
+                                        <span class="material-symbols-outlined text-sm"
+                                            data-icon="menu_book">menu_book</span>
+                                        <span class="text-[10px] font-bold italic tracking-tight">Reference: Essential
+                                            Calculus, Section 3.4, Theorem 2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Question 3 (Reviewing State) -->
+                <div class="bg-[#111C2D] rounded-xl overflow-hidden">
+                    <div class="p-6 border-l-4 border-emerald-500/50">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-bold text-[#797676] uppercase tracking-widest">Question 03</span>
+                            <div class="flex items-center gap-2 text-emerald-400">
+                                <span class="material-symbols-outlined text-sm"
+                                    data-icon="check_circle">check_circle</span>
+                                <span class="text-[10px] font-bold uppercase">Correct</span>
+                            </div>
+                        </div>
+                        <p class="text-lg leading-relaxed text-[#D8E3FB] mb-6 font-medium">State the Fundamental Theorem
+                            of Calculus (Part 1).</p>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <div class="bg-[#081425] p-4 rounded-lg">
+                                    <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Your
+                                        Answer</span>
+                                    <p class="text-emerald-400 font-bold">If $f$ is continuous on $[a, b]$, then $g(x) =
+                                        \int_a^x f(t) dt$ has derivative $g'(x) = f(x)$.</p>
+                                </div>
+                                <div class="bg-[#081425] p-4 rounded-lg">
+                                    <span class="text-[10px] font-bold text-[#797676] uppercase block mb-2">Correct
+                                        Answer</span>
+                                    <p class="text-[#D8E3FB] font-bold">If $f$ is continuous on $[a, b]$, then $g(x) =
+                                        \int_a^x f(t) dt$ has derivative $g'(x) = f(x)$.</p>
+                                </div>
+                            </div>
+                            <div class="bg-[#1F2A3C] p-6 rounded-lg">
+                                <span
+                                    class="text-[10px] font-bold text-accent-orange uppercase block mb-3 tracking-widest">Explanation</span>
+                                <p class="text-sm text-[#D8E3FB]/80 leading-relaxed mb-4">
+                                    This theorem connects differential calculus and integral calculus. It states that
+                                    differentiation and integration are inverse processes.
+                                </p>
+                                <div class="pt-4 border-t border-[#2A3548]">
+                                    <div class="flex items-center gap-2 text-[#797676]">
+                                        <span class="material-symbols-outlined text-sm"
+                                            data-icon="menu_book">menu_book</span>
+                                        <span class="text-[10px] font-bold italic tracking-tight">Reference: Stewart's
+                                            Calculus, Chapter 5.3, p. 394</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer Meta -->
+    <footer class="py-12 px-6 text-center border-t border-[#111C2D]">
+        <p class="text-[10px] font-bold tracking-[0.2em] text-[#797676] uppercase mb-2">Academic Monolith Protocol v4.2
+        </p>
+        <p class="text-xs text-[#797676]">Proprietary Assessment System © 2024 E-Pretest</p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>E-Pretest Scholar Dashboard</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-tint": "#cac5c5",
+            "surface-container": "#201f1f",
+            "on-error": "#690005",
+            "background": "#081425",
+            "on-surface-variant": "#d0c4c4",
+            "surface-variant": "#363434",
+            "outline-variant": "#4d4545",
+            "primary-fixed": "#e6e1e1",
+            "on-secondary-fixed": "#1c1b1b",
+            "on-tertiary-fixed-variant": "#474646",
+            "tertiary-fixed-dim": "#c9c6c5",
+            "surface-container-highest": "#2A3548",
+            "primary": "#cac5c5",
+            "on-secondary-fixed-variant": "#484646",
+            "surface": "#081425",
+            "inverse-primary": "#605e5d",
+            "on-primary-container": "#7c7979",
+            "error-container": "#93000a",
+            "surface-bright": "#2F3A4C",
+            "secondary-fixed-dim": "#c9c6c5",
+            "on-primary-fixed-variant": "#484646",
+            "on-background": "#D8E3FB",
+            "on-tertiary-fixed": "#1c1b1b",
+            "inverse-surface": "#e6e2e1",
+            "tertiary-fixed": "#e5e2e1",
+            "on-primary": "#323030",
+            "tertiary-container": "#0b0b0b",
+            "primary-container": "#FB5C0C",
+            "surface-container-low": "#111C2D",
+            "on-primary-fixed": "#1d1b1b",
+            "inverse-on-surface": "#313030",
+            "on-tertiary": "#313030",
+            "surface-dim": "#081425",
+            "primary-fixed-dim": "#797676",
+            "on-secondary-container": "#b8b4b4",
+            "surface-container-lowest": "#040E1F",
+            "error": "#ffb4ab",
+            "outline": "#998e8f",
+            "secondary-fixed": "#e6e1e1",
+            "secondary": "#c9c6c5",
+            "on-tertiary-container": "#7b7979",
+            "on-secondary": "#313030",
+            "secondary-container": "#484646",
+            "tertiary": "#c9c6c5",
+            "on-surface": "#D8E3FB",
+            "on-error-container": "#ffdad6",
+            "surface-container-high": "#1F2A3C"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #081425;
+      color: #D8E3FB;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .glass-panel {
+      background: rgba(47, 58, 76, 0.6);
+      backdrop-filter: blur(12px);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Custom scrollbar for Sidebar Subject List */
+    .sidebar-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-track {
+      background: rgba(42, 53, 72, 0.1);
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb {
+      background: #2A3548;
+      border-radius: 10px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #3a4b66;
+    }
+  </style>
+</head>
+
+<body class="antialiased overflow-hidden h-screen flex flex-col">
+  <!-- TopAppBar Execution -->
+  <header
+    class="flex justify-between items-center w-full px-6 h-16 z-50 bg-[#111C2D] no-border font-['Inter'] antialiased tracking-tight text-[#D8E3FB]">
+    <div class="flex items-center gap-8">
+      <span class="text-xl font-bold tracking-tighter text-[#FB5C0C]">E-Pretest</span>
+      <nav class="hidden md:flex gap-6 items-center">
+        <a class="text-[#FB5C0C] font-semibold border-b-2 border-[#FB5C0C] pb-0.5" href="#">Dashboard</a>
+        <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="subjectpage.html">Subjects</a>
+        <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="history.html">History</a>
+        <a class="text-[#D8E3FB] opacity-70 hover:opacity-100 transition-opacity duration-200" href="archivepage.html">Archive</a>
+        
+      </nav>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="p-2 rounded-full hover:bg-[#2A3548] transition-colors relative">
+        <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        <span class="absolute top-2 right-2 w-2 h-2 bg-[#FB5C0C] rounded-full"></span>
+      </button>
+      <div class="flex items-center gap-3 pl-2">
+        <div class="text-right hidden sm:block">
+          <p class="text-xs font-bold">Academic Scholar</p>
+          <p class="text-[10px] opacity-50">Scholar Profile</p>
+        </div>
+        <img alt="User Scholar Profile" class="w-10 h-10 rounded-full border border-outline-variant/20"
+          data-alt="Close up portrait of a male student"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOAugRPYoKnnMU_7G4odzEynhlwniW1xQqdWQ8Ot1t0VMbvDSv7UGTaUm7MUUdDnQ-v4UNCCtFkY_PBrSLjV031bqzIBfeyXy8bR27n_xDYn4VdejrNUFVzuU12PD2BLRo_UQ6_B2UhGwPbf7NaT5Ek5TjosXpraTo5-5XfrroKq64IqVyqzxZKIr6V_Yp4GcbtRZMmaWDFIkG3y0KCmj1vFbuCwVjXIht2Ys3t7y06YRxIfDD5pO5eiBCmZq2AQ5ZzLEdcl8DvIWg" />
+      </div>
+    </div>
+  </header>
+  <main class="flex-1 flex overflow-hidden">
+    <!-- Sidebar Navigation / Column 1 -->
+    <aside
+      class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-[#111C2D] flex flex-col py-6 z-40 no-border shadow-[4px_0_24px_rgba(0,0,0,0.3)]">
+      <div class="px-4 mb-8">
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm opacity-40"
+            data-icon="search">search</span>
+          <input
+            class="w-full bg-surface-container-highest border-none rounded-lg py-2.5 pl-10 text-sm focus:ring-1 focus:ring-primary-container placeholder:opacity-40"
+            placeholder="Search resources..." type="text" />
+        </div>
+      </div>
+      <p class="px-6 text-[10px] uppercase tracking-[0.15em] font-bold opacity-40 mb-4">Subject available</p>
+      <div class="flex-1 overflow-y-auto sidebar-scrollbar space-y-1 mb-6">
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">Mathematics</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">48 documentation items</span>
+          </div>
+        </div>
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="insights">insights</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">Physics</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">32 theory notes</span>
+          </div>
+        </div>
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="sticky_note_2">sticky_note_2</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">Chemistry</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">15 active worksheets</span>
+          </div>
+        </div>
+        <!-- Extended List for Scrollability -->
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">Computer Science</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">24 algorithms notes</span>
+          </div>
+        </div>
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">English Literature</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">12 essay guides</span>
+          </div>
+        </div>
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">Biology</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">40 lab reports</span>
+          </div>
+        </div>
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">Macroeconomics</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">18 data sheets</span>
+          </div>
+        </div>
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 hover:bg-[#1F2A3C] transition-all duration-300 px-4 py-3 mx-2 rounded-lg cursor-pointer">
+          <span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+          <div class="flex flex-col">
+            <span class="font-['Inter'] text-sm tracking-wide uppercase font-medium">Philosophy</span>
+            <span class="text-[10px] lowercase normal-case opacity-60">22 reading summaries</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-auto space-y-1">
+        <div
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all">
+          <span class="material-symbols-outlined" data-icon="settings">settings</span>
+          <span class="text-sm uppercase font-medium">Settings</span>
+        </div>
+        <div onclick="window.location.href='loginscreen.html'"
+          class="flex items-center gap-3 text-[#D8E3FB] opacity-60 hover:opacity-100 px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all">
+          <span class="material-symbols-outlined" data-icon="logout">logout</span>
+          <span class="text-sm uppercase font-medium">Logout</span>
+        </div>
+      </div>
+    </aside>
+    <!-- Main Content Area (Column 2 & 3) -->
+    <div class="flex-1 ml-64 p-8 flex gap-8 overflow-y-auto">
+      <!-- Column 2: Center Panel -->
+      <section class="flex-[1.5] flex flex-col gap-8">
+        <!-- Action Card -->
+        <div
+          class="relative group cursor-pointer overflow-hidden rounded-xl bg-gradient-to-br from-[#10B981] to-[#059669] p-8 min-h-[220px] flex flex-col justify-end">
+          <div class="absolute top-0 right-0 p-8 opacity-20 transform group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-8xl" data-icon="rocket_launch">rocket_launch</span>
+          </div>
+          <div class="relative z-10">
+            <h2 class="text-3xl font-extrabold tracking-tight mb-2">Gen test</h2>
+            <p class="max-w-md opacity-90 text-sm mb-6">Initialize a new comprehensive evaluation session based on your
+              current academic progress and target subjects.</p>
+            <button onclick="window.location.href='subjectpage.html'"
+              class="bg-[#D8E3FB] text-[#081425] px-6 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all">
+              Start New Test
+            </button>
+          </div>
+        </div>
+        <!-- History Section -->
+        <div class="space-y-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold tracking-tight opacity-90">History</h3>
+            <button onclick="window.location.href='history.html'" class="text-xs uppercase font-bold text-[#FB5C0C] tracking-widest hover:underline">View All</button>
+          </div>
+          <div class="space-y-4">
+            <!-- History Item 1 -->
+            <div
+              class="bg-surface-container-low rounded-xl p-5 flex items-center justify-between group hover:bg-surface-container-high transition-colors">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-[#2A3548] flex items-center justify-center text-[#FB5C0C]">
+                  <span class="material-symbols-outlined" data-icon="functions">functions</span>
+                </div>
+                <div>
+                  <h4 class="font-bold text-sm">Advanced Calculus III</h4>
+                  <p class="text-xs opacity-50">Completed: Oct 24, 2023 • 45 Questions</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-lg font-bold text-[#10B981]">92%</p>
+                <p class="text-[10px] uppercase tracking-tighter opacity-40">Success Rate</p>
+              </div>
+            </div>
+            <!-- History Item 2 -->
+            <div
+              class="bg-surface-container-low rounded-xl p-5 flex items-center justify-between group hover:bg-surface-container-high transition-colors">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-[#2A3548] flex items-center justify-center text-[#FB5C0C]">
+                  <span class="material-symbols-outlined" data-icon="science">science</span>
+                </div>
+                <div>
+                  <h4 class="font-bold text-sm">Organic Chemistry Basics</h4>
+                  <p class="text-xs opacity-50">Completed: Oct 21, 2023 • 30 Questions</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-lg font-bold text-[#FB5C0C]">68%</p>
+                <p class="text-[10px] uppercase tracking-tighter opacity-40">Success Rate</p>
+              </div>
+            </div>
+            <!-- History Item 3 -->
+            <div
+              class="bg-surface-container-low rounded-xl p-5 flex items-center justify-between group hover:bg-surface-container-high transition-colors">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-[#2A3548] flex items-center justify-center text-[#FB5C0C]">
+                  <span class="material-symbols-outlined"
+                    data-icon="precision_manufacturing">precision_manufacturing</span>
+                </div>
+                <div>
+                  <h4 class="font-bold text-sm">Thermodynamics Lab Prep</h4>
+                  <p class="text-xs opacity-50">Completed: Oct 18, 2023 • 25 Questions</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-lg font-bold text-[#10B981]">85%</p>
+                <p class="text-[10px] uppercase tracking-tighter opacity-40">Success Rate</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Column 3: Right Panel -->
+      <section class="flex-1 space-y-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold tracking-tight opacity-90">Note</h3>
+        </div>
+        <div class="space-y-4">
+          <!-- Note Hero Card 1 (Expandable style) -->
+          <div
+            class="glass-panel rounded-xl p-6 border-l-2 border-[#FB5C0C] cursor-pointer hover:translate-x-1 transition-all">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="font-bold text-base leading-tight">Note #1 24/10/23</h4>
+              <div>
+              <button class="hover:bg-black/5 p-1 rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined opacity-30 text-md">
+                  more_horiz
+                </span>
+              </button>
+              </div>
+            </div>
+            <p class="text-sm opacity-70 line-clamp-3 leading-relaxed">
+              Focus on the second law of thermodynamics for the upcoming mock exam. Key formulas include Entropy
+              calculation and heat engine efficiency cycles.
+            </p>
+            <div class="mt-4 flex gap-2">
+              <span
+                class="text-[9px] px-2 py-0.5 rounded bg-[#FB5C0C]/20 text-[#FB5C0C] font-bold uppercase tracking-widest">Physics</span>
+              <span
+                class="text-[9px] px-2 py-0.5 rounded bg-[#2A3548] text-[#D8E3FB] font-bold uppercase tracking-widest">Important</span>
+            </div>
+          </div>
+          <!-- Note Hero Card 2 -->
+          <div
+            class="bg-surface-container-low rounded-xl p-6 cursor-pointer hover:bg-surface-container-high transition-colors">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="font-bold text-base leading-tight">Note #2 22/10/23</h4>
+              <div>
+              <button class="hover:bg-black/5 p-1 rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined opacity-30 text-md">
+                  more_horiz
+                </span>
+              </button>
+              </div>
+            </div>
+            <p class="text-sm opacity-70 line-clamp-2 leading-relaxed">
+              Vocabulary review for technical documentation: "Monolithic", "Immutable", "Heuristic".
+            </p>
+          </div>
+          <!-- Note Hero Card 3 -->
+          <div
+            class="bg-surface-container-low rounded-xl p-6 cursor-pointer hover:bg-surface-container-high transition-colors">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="font-bold text-base leading-tight">Note #3 20/10/23</h4>
+              <div>
+              <button class="hover:bg-black/5 p-1 rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined opacity-30 text-md">
+                  more_horiz
+                </span>
+              </button>
+              </div>
+            </div>
+            <p class="text-sm opacity-70 line-clamp-2 leading-relaxed">
+              Linear algebra study group summary. Eigenvectors and transformations.
+            </p>
+          </div>
+          <!-- Note Hero Card 4 -->
+          <div
+            class="bg-surface-container-low rounded-xl p-6 cursor-pointer hover:bg-surface-container-high transition-colors">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="font-bold text-base leading-tight">Note #4 15/10/23</h4>
+              <div>
+              <button class="hover:bg-black/5 p-1 rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined opacity-30 text-md">
+                  more_horiz
+                </span>
+              </button>
+              </div>
+            </div>
+            <p class="text-sm opacity-70 line-clamp-2 leading-relaxed">
+              Schedule update: Mock test on Friday moved to 2 PM.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <!-- Contextual FAB -->
+  <button
+    class="fixed bottom-8 right-8 w-14 h-14 bg-[#FB5C0C] text-[#081425] rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-all group z-50">
+    <span class="material-symbols-outlined text-2xl" data-icon="edit">edit</span>
+    <span
+      class="absolute right-full mr-4 bg-[#1F2A3C] text-[#D8E3FB] px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Quick
+      Note</span>
+  </button>
+</body>
+
+</html>
