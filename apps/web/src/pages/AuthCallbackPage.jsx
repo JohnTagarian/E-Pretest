@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "../lib_api";
 import { setAccessToken } from "../lib_auth";
@@ -7,8 +7,14 @@ export default function AuthCallbackPage() {
   const [searchParams] = useSearchParams();
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
+    if (hasStartedRef.current) {
+      return;
+    }
+    hasStartedRef.current = true;
+
     async function runCallback() {
       const code = searchParams.get("code");
       if (!code) {
@@ -16,8 +22,14 @@ export default function AuthCallbackPage() {
         return;
       }
 
+      const state = searchParams.get("state") || "";
+      const callbackKey = `oauth_callback_done:${code}:${state}`;
+      if (window.sessionStorage.getItem(callbackKey) === "1") {
+        setError("OAuth callback already processed. Please login again.");
+        return;
+      }
+
       try {
-        const state = searchParams.get("state");
         const callbackResponse = await apiRequest(
           `/auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || "")}`
         );
@@ -33,8 +45,9 @@ export default function AuthCallbackPage() {
         }
 
         const callbackPayload = await callbackResponse.json();
+        window.sessionStorage.setItem(callbackKey, "1");
         setAccessToken(callbackPayload.access_token);
-        navigate("/me", { replace: true });
+        navigate("/archive", { replace: true });
       } catch (callbackError) {
         setError(callbackError instanceof Error ? callbackError.message : "Unexpected callback error");
       }

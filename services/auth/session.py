@@ -40,3 +40,12 @@ def get_current_user(
             detail="Invalid or expired token",
         )
     return user
+
+
+def get_admin_user(current_user: UserPublic = Depends(get_current_user)) -> UserPublic:
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin role required",
+        )
+    return current_user

@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import ProfilePage from "./pages/ProfilePage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 import { getAccessToken } from "./lib_auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -15,6 +16,15 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route
+        path="/archive"
+        element={
+          <ProtectedRoute>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/admin" element={<Navigate to="/archive" replace />} />
+      <Route
         path="/me"
         element={
           <ProtectedRoute>
@@ -23,7 +33,7 @@ export default function App() {
         }
       />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
-      <Route path="*" element={<Navigate to={hasToken ? "/me" : "/login"} replace />} />
+      <Route path="*" element={<Navigate to={hasToken ? "/archive" : "/login"} replace />} />
     </Routes>
   );
 }
