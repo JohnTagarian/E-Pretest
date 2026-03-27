@@ -1,5 +1,9 @@
+import secrets
+import time
 import os
 import urllib.parse
+
+import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import RedirectResponse
@@ -12,12 +16,30 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 ALLOWED_EMAIL_DOMAIN = "@email.kmutnb.ac.th"
 
+# NOTE: For now this is in-memory. In production, move this to Redis/DB.
+STATE_TTL_SECONDS = 600
+_state_store: dict[str, float] = {}
 
-def _build_google_auth_url() -> str | None:
+
+def _issue_state() -> str:
+    state = secrets.token_urlsafe(24)
+    _state_store[state] = time.time() + STATE_TTL_SECONDS
+    return state
+
+
+def _verify_state(state: str) -> None:
+    expires_at = _state_store.pop(state, None)
+    if not expires_at or expires_at < time.time():
+        raise HTTPException(status_code=400, detail="Invalid or expired OAuth state")
+
+
+def _build_google_auth_url(state: str) -> str:
     client_id = os.getenv("GOOGLE_CLIENT_ID", "").strip()
-    redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "http://127.0.0.1:8000/auth/google/callback").strip()
+    redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "").strip()
     if not client_id:
-        return None
+        raise HTTPException(status_code=500, detail="Google client ID not configured")
+    if not redirect_uri:
+        raise HTTPException(status_code=500, detail="Google redirect URI not configured")
 
     query = urllib.parse.urlencode(
         {
@@ -27,20 +49,45 @@ def _build_google_auth_url() -> str | None:
             "scope": "openid email profile",
             "access_type": "offline",
             "prompt": "consent",
-            "state": "kmutnb-login",
+            "state": state,
         }
     )
     return f"https://accounts.google.com/o/oauth2/v2/auth?{query}"
 
 
-def _extract_email_from_code(code: str) -> str:
-    if code.startswith("dev:") and len(code.split(":", 1)) == 2:
-        return code.split(":", 1)[1].strip().lower()
+def _exchange_code_for_access_token(code: str) -> str:
+    token_url = "https://oauth2.googleapis.com/token"
+    payload = {
+        "code": code,
+        "client_id": os.getenv("GOOGLE_CLIENT_ID", "").strip(),
+        "client_secret": os.getenv("GOOGLE_CLIENT_SECRET", "").strip(),
+        "redirect_uri": os.getenv("GOOGLE_REDIRECT_URI", "").strip(),
+        "grant_type": "authorization_code",
+    }
+    if not payload["client_secret"]:
+        raise HTTPException(status_code=500, detail="Google client secret not configured")
+    with httpx.Client(timeout=15.0) as client:
+        response = client.post(token_url, data=payload)
 
-    raise HTTPException(
-        status_code=501,
-        detail="Real Google token exchange not implemented yet. Use dev:<email>@email.kmutnb.ac.th for now.",
-    )
+    if response.status_code != 200:
+        raise HTTPException(status_code=401, detail="Google token exchange failed")
+
+    token_payload = response.json()
+    access_token = token_payload.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Missing Google access token")
+    return access_token
+
+def _get_google_userinfo(access_token: str) -> dict:
+    with httpx.Client(timeout=15.0) as client:
+        response = client.get(
+            "https://openidconnect.googleapis.com/v1/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=401, detail="Google userinfo lookup failed")
+    return response.json()
 
 
 def _validate_kmutnb_email(email: str) -> None:
@@ -53,50 +100,42 @@ def _validate_kmutnb_email(email: str) -> None:
 
 @router.get("/google/start")
 def google_start() -> RedirectResponse:
-    google_auth_url = _build_google_auth_url()
+    state = _issue_state()
+    google_auth_url = _build_google_auth_url(state)
 
-    if google_auth_url:
-        return RedirectResponse(url=google_auth_url, status_code=307)
-
-    # Dev fallback when Google OAuth credentials are not set.
-    return RedirectResponse(
-        url="/auth/google/callback?code=dev:test@email.kmutnb.ac.th&state=dev",
-        status_code=307,
-    )
+    return RedirectResponse(url=google_auth_url, status_code=307)
 
 
 @router.post("/google/start", response_model=AuthStartResponse)
 def google_start_api() -> AuthStartResponse:
-    google_auth_url = _build_google_auth_url()
-    if google_auth_url:
-        return AuthStartResponse(auth_url=google_auth_url, state="kmutnb-login")
+    state = _issue_state()
+    google_auth_url = _build_google_auth_url(state)
 
-    return AuthStartResponse(
-        auth_url="/auth/google/callback?code=dev:test@email.kmutnb.ac.th&state=dev",
-        state="dev",
-    )
+    return AuthStartResponse(auth_url=google_auth_url, state=state)
 
 
 @router.get("/google/callback", response_model=AuthCallbackResponse)
-def google_callback(code: str = Query(...), state: str | None = Query(None)) -> AuthCallbackResponse:
-    del state  # state verification will be added with real OAuth token exchange.
+def google_callback(code: str = Query(...), state: str = Query(...)) -> AuthCallbackResponse:
+    _verify_state(state)
 
-    email = _extract_email_from_code(code)
+    google_access_token = _exchange_code_for_access_token(code)
+    userinfo = _get_google_userinfo(google_access_token)
+
+    email = (userinfo.get("email") or "").strip().lower()
+    email_verified = bool(userinfo.get("email_verified"))
+    if not email_verified:
+        raise HTTPException(status_code=403, detail="Email is not verified by Google")
+    
     _validate_kmutnb_email(email)
-
+    
     user = UserPublic(
-        user_id=f"u_{email.split('@')[0]}",
+        user_id=f"u_{userinfo.get('sub', email.split('@')[0])}",
         email=email,
-        full_name=email.split("@")[0].replace(".", " ").title(),
+        full_name=(userinfo.get("name") or email.split("@")[0]).strip(),
         role="student",
     )
     token = issue_token(user)
-
-    return AuthCallbackResponse(
-        access_token=token,
-        token_type="bearer",
-        user=user,
-    )
+    return AuthCallbackResponse(access_token=token, token_type="bearer", user=user)
 
 
 @router.post("/logout", response_model=LogoutResponse)

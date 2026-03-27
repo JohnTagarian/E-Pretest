@@ -17,7 +17,11 @@ export default function AuthCallbackPage() {
       }
 
       try {
-        const callbackResponse = await apiRequest(`/auth/google/callback?code=${encodeURIComponent(code)}`);
+        const state = searchParams.get("state");
+        const callbackResponse = await apiRequest(
+          `/auth/google/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || "")}`
+        );
+
         if (!callbackResponse.ok) {
           const payload = await callbackResponse.json().catch(() => ({}));
           if (callbackResponse.status === 403) {
