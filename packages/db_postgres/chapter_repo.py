@@ -46,3 +46,16 @@ def list_chapters_by_subject(subject_id: int) -> list[DbChapter]:
             cur.execute(sql, (subject_id,))
             rows = cur.fetchall()
     return [DbChapter(*r) for r in rows]
+
+
+def get_chapter_by_id(chapter_id: int) -> DbChapter | None:
+    sql = """
+    SELECT id, subject_id, chapter_name, file_path, uploaded_by_user_id, uploaded_at
+    FROM chapters
+    WHERE id = %s
+    """
+    with psycopg.connect(_database_url()) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (chapter_id,))
+            row = cur.fetchone()
+    return DbChapter(*row) if row else None

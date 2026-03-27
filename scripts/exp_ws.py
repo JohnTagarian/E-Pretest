@@ -1,21 +1,13 @@
 
-import secrets
-from time import time
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from services.core_exam.extract_service import extract_and_save_markdown
 
+res = extract_and_save_markdown(
+    "data/Ch1_SE.pdf",
+    "outputs/markdown/ch1_test.md",
+)
 
-_state_store: dict[str, float] = {}
-
-def _issue_state() -> str:
-    state = secrets.token_urlsafe(24)
-    _state_store[state] = time() + 300  # 5 minutes TTL
-    return state
-
-
-state = _issue_state()
-print("Issued state:", state)
-print("State store:", _state_store)
-
-
-print(_state_store.pop(state, None))  # Should return the expiry timestamp
-print("State store after pop:", _state_store)
+print(res)

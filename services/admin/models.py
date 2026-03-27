@@ -11,8 +11,8 @@ class SubjectResponse(BaseModel):
     created_at: str
 
 class ChapterResponse(BaseModel):
+    chapter_id: int
     chapter_name: str
     file_path: str
     uploaded_by_user_id: int
     uploaded_at: str
-

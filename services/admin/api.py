@@ -97,6 +97,7 @@ async def upload_chapter_api(
         uploaded_by_user_id=int(current_user.user_id),
     )
     return ChapterResponse(
+        chapter_id=chapter.id,
         chapter_name=chapter.chapter_name,
         file_path=chapter.file_path,
         uploaded_by_user_id=chapter.uploaded_by_user_id,
@@ -115,6 +116,7 @@ def list_chapters_api(
     rows = list_chapters_by_subject(subject.id)
     return [
         ChapterResponse(
+            chapter_id=r.id,
             chapter_name=r.chapter_name,
             file_path=r.file_path,
             uploaded_by_user_id=r.uploaded_by_user_id,

@@ -25,6 +25,8 @@ export default function AdminDashboardPage() {
   const [chapterName, setChapterName] = useState("");
   const [chapterFile, setChapterFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
+  const [extractMessage, setExtractMessage] = useState("");
+  const [extractingChapterId, setExtractingChapterId] = useState(null);
 
   const [subjectMessage, setSubjectMessage] = useState("");
 
@@ -67,8 +69,8 @@ export default function AdminDashboardPage() {
     }
 
     const rows = await response.json();
-    const mapped = rows.map((r, index) => ({
-      id: `${subjectId}_${index}_${r.uploaded_at}`,
+    const mapped = rows.map((r) => ({
+      id: r.chapter_id,
       chapterName: r.chapter_name,
       filePath: r.file_path,
       uploadedByUserId: r.uploaded_by_user_id,
@@ -237,6 +239,35 @@ export default function AdminDashboardPage() {
     setChapterFile(null);
     setUploadMessage("Upload success");
     await loadChapters(selectedSubject.subjectId, token);
+  };
+
+  const handleExtractChapter = async (chapterId) => {
+    const token = getAccessToken();
+    if (!token) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    setExtractingChapterId(chapterId);
+    setExtractMessage("");
+
+    const response = await apiRequest(`/core/chapters/${chapterId}/extract`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      setExtractMessage(payload.detail || "Extract failed");
+      setExtractingChapterId(null);
+      return;
+    }
+
+    const payload = await response.json();
+    setExtractMessage(`Extracted: ${payload.output_path}`);
+    setExtractingChapterId(null);
   };
 
   return (
@@ -421,6 +452,7 @@ export default function AdminDashboardPage() {
                 Upload Slide PDF
               </button>
                 {uploadMessage ? <div style={{ fontSize: 13, opacity: 0.9 }}>{uploadMessage}</div> : null}
+                {extractMessage ? <div style={{ fontSize: 13, opacity: 0.9 }}>{extractMessage}</div> : null}
               </form>
 
               <div
@@ -447,6 +479,25 @@ export default function AdminDashboardPage() {
                         <div style={{ fontWeight: 700 }}>{chapter.chapterName}</div>
                         <div style={{ fontSize: 13, opacity: 0.85, marginTop: 3 }}>{chapter.filePath}</div>
                         <div style={{ fontSize: 11, opacity: 0.6, marginTop: 3 }}>Uploaded: {formatDate(chapter.uploadedAt)}</div>
+                        <div style={{ marginTop: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => handleExtractChapter(chapter.id)}
+                            disabled={extractingChapterId === chapter.id}
+                            style={{
+                              height: 32,
+                              border: "none",
+                              borderRadius: 8,
+                              padding: "0 10px",
+                              background: extractingChapterId === chapter.id ? "#7f8da8" : "#2f8f83",
+                              color: "white",
+                              fontWeight: 700,
+                              cursor: extractingChapterId === chapter.id ? "not-allowed" : "pointer",
+                            }}
+                          >
+                            {extractingChapterId === chapter.id ? "Extracting..." : "Extract Markdown"}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
