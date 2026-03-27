@@ -45,3 +45,15 @@ def list_subjects() -> list[DbSubject]:
             cur.execute(sql)
             rows = cur.fetchall()
     return [DbSubject(*r) for r in rows]
+
+def get_subject_by_subject_id(subject_id: str) -> DbSubject | None:
+    sql = """
+    SELECT id, subject_id, name, created_by_user_id, created_at
+    FROM subjects
+    WHERE subject_id = %s
+    """
+    with psycopg.connect(_database_url()) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (subject_id,))
+            row = cur.fetchone()
+    return DbSubject(*row) if row else None

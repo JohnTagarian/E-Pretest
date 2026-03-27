@@ -16,6 +16,7 @@ export default function AdminDashboardPage() {
 
   const [subjects, setSubjects] = useState([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
+  const [chaptersBySubject, setChaptersBySubject] = useState({});
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [subjectIdInput, setSubjectIdInput] = useState("");
@@ -43,7 +44,6 @@ export default function AdminDashboardPage() {
       name: r.name,
       createdBy: String(r.created_by_user_id),
       createdAt: r.created_at,
-      chapters: [],
     }));
 
     setSubjects(mapped);
@@ -52,6 +52,30 @@ export default function AdminDashboardPage() {
       if (prev && mapped.some((x) => x.subjectId === prev)) return prev;
       return mapped[0].subjectId;
     });
+  };
+
+  const loadChapters = async (subjectId, token) => {
+    if (!subjectId) return;
+
+    const response = await apiRequest(`/admin/subjects/${encodeURIComponent(subjectId)}/chapters`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      setChaptersBySubject((prev) => ({ ...prev, [subjectId]: [] }));
+      return;
+    }
+
+    const rows = await response.json();
+    const mapped = rows.map((r, index) => ({
+      id: `${subjectId}_${index}_${r.uploaded_at}`,
+      chapterName: r.chapter_name,
+      filePath: r.file_path,
+      uploadedByUserId: r.uploaded_by_user_id,
+      uploadedAt: r.uploaded_at,
+    }));
+
+    setChaptersBySubject((prev) => ({ ...prev, [subjectId]: mapped }));
   };
 
   useEffect(() => {
@@ -84,12 +108,25 @@ export default function AdminDashboardPage() {
     loadProfile();
   }, [navigate]);
 
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token || !selectedSubjectId) return;
+    loadChapters(selectedSubjectId, token);
+  }, [selectedSubjectId]);
+
   const selectedSubject = useMemo(
     () => subjects.find((s) => s.subjectId === selectedSubjectId) || null,
     [subjects, selectedSubjectId]
   );
 
+  const selectedSubjectChapters = chaptersBySubject[selectedSubjectId] || [];
   const isAdmin = profile?.role === "admin";
+  const createSubjectDisabled = !isAdmin || !subjectIdInput.trim() || !subjectNameInput.trim();
+  const uploadSlideDisabled =
+    !selectedSubject ||
+    !chapterName.trim() ||
+    !chapterFile ||
+    !chapterFile.name?.toLowerCase().endsWith(".pdf");
 
   const handleLogout = async () => {
     const token = getAccessToken();
@@ -148,7 +185,7 @@ export default function AdminDashboardPage() {
     setSelectedSubjectId(sid);
   };
 
-  const handleUploadSlide = (event) => {
+  const handleUploadSlide = async (event) => {
     event.preventDefault();
     setUploadMessage("");
 
@@ -172,23 +209,34 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    const newChapter = {
-      id: `ch_${Date.now()}`,
-      chapterName: chapterName.trim(),
-      fileName: chapterFile.name,
-      uploadedAt: new Date().toISOString(),
-    };
+    const token = getAccessToken();
+    if (!token) {
+      navigate("/login", { replace: true });
+      return;
+    }
 
-    setSubjects((prev) =>
-      prev.map((subject) => {
-        if (subject.subjectId !== selectedSubject.subjectId) return subject;
-        return { ...subject, chapters: [newChapter, ...subject.chapters] };
-      })
-    );
+    const formData = new FormData();
+    formData.append("chapter_name", chapterName.trim());
+    formData.append("file", chapterFile);
+
+    const response = await apiRequest(`/admin/subjects/${encodeURIComponent(selectedSubject.subjectId)}/chapters/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      setUploadMessage(payload.detail || "Upload failed");
+      return;
+    }
 
     setChapterName("");
     setChapterFile(null);
-    setUploadMessage("Slide uploaded (frontend mock)");
+    setUploadMessage("Upload success");
+    await loadChapters(selectedSubject.subjectId, token);
   };
 
   return (
@@ -234,7 +282,7 @@ export default function AdminDashboardPage() {
           display: "grid",
           gridTemplateColumns: isNarrowScreen ? "1fr" : "minmax(320px, 380px) 1fr",
           gap: 20,
-          minHeight: "calc(100vh - 64px)",
+          height: "calc(100vh - 64px)",
         }}
       >
         <section style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -306,6 +354,7 @@ export default function AdminDashboardPage() {
             flexDirection: "column",
             gap: 16,
             overflow: "hidden",
+            minHeight: 0,
           }}
         >
           <h2 style={{ margin: 0, fontSize: 22 }}>Subject Details</h2>
@@ -335,38 +384,68 @@ export default function AdminDashboardPage() {
 
               <form onSubmit={handleUploadSlide} style={{ background: "#0f1b2d", borderRadius: 12, padding: 14, display: "grid", gap: 10 }}>
                 <h3 style={{ margin: 0 }}>Upload Slide (PDF)</h3>
-                <input
-                  type="text"
-                  value={chapterName}
-                  onChange={(e) => setChapterName(e.target.value)}
-                  placeholder="Chapter name"
-                  style={{ height: 40, borderRadius: 8, border: "1px solid #334159", background: "#111C2D", color: "#D8E3FB", padding: "0 10px" }}
-                />
-                <input
-                  type="file"
-                  accept="application/pdf,.pdf"
-                  onChange={(e) => setChapterFile(e.target.files?.[0] || null)}
-                  style={{ color: "#D8E3FB" }}
-                />
-                <button
-                  type="submit"
-                  style={{ height: 40, border: "none", borderRadius: 8, background: "#FB5C0C", color: "white", fontWeight: 700, cursor: "pointer" }}
-                >
-                  Upload Slide PDF
-                </button>
+              <input
+                type="text"
+                value={chapterName}
+                onChange={(e) => {
+                  setChapterName(e.target.value);
+                  setUploadMessage("");
+                }}
+                placeholder="Chapter name"
+                required
+                style={{ height: 40, borderRadius: 8, border: "1px solid #334159", background: "#111C2D", color: "#D8E3FB", padding: "0 10px" }}
+              />
+              <input
+                type="file"
+                accept="application/pdf,.pdf"
+                onChange={(e) => {
+                  setChapterFile(e.target.files?.[0] || null);
+                  setUploadMessage("");
+                }}
+                required
+                style={{ color: "#D8E3FB" }}
+              />
+              <button
+                type="submit"
+                disabled={uploadSlideDisabled}
+                style={{
+                  height: 40,
+                  border: "none",
+                  borderRadius: 8,
+                  background: uploadSlideDisabled ? "#7f8da8" : "#FB5C0C",
+                  color: "white",
+                  fontWeight: 700,
+                  cursor: uploadSlideDisabled ? "not-allowed" : "pointer",
+                }}
+              >
+                Upload Slide PDF
+              </button>
                 {uploadMessage ? <div style={{ fontSize: 13, opacity: 0.9 }}>{uploadMessage}</div> : null}
               </form>
 
-              <div style={{ background: "#0f1b2d", borderRadius: 12, padding: 14, overflowY: "auto" }}>
-                <h3 style={{ marginTop: 0 }}>Uploaded Chapters</h3>
-                {selectedSubject.chapters.length === 0 ? (
+              <div
+                style={{
+                  background: "#0f1b2d",
+                  borderRadius: 12,
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  padding: 14,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                  flex: 1,
+                  minHeight: 220,
+                  overflow: "hidden",
+                }}
+              >
+                <h3 style={{ margin: 0 }}>Uploaded Chapters</h3>
+                {selectedSubjectChapters.length === 0 ? (
                   <div style={{ opacity: 0.75, fontSize: 14 }}>No chapter uploaded yet</div>
                 ) : (
-                  <div style={{ display: "grid", gap: 10 }}>
-                    {selectedSubject.chapters.map((chapter) => (
+                  <div style={{ display: "grid", gap: 10, overflowY: "auto", paddingRight: 4 }}>
+                    {selectedSubjectChapters.map((chapter) => (
                       <div key={chapter.id} style={{ background: "#111C2D", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 10 }}>
                         <div style={{ fontWeight: 700 }}>{chapter.chapterName}</div>
-                        <div style={{ fontSize: 13, opacity: 0.85, marginTop: 3 }}>{chapter.fileName}</div>
+                        <div style={{ fontSize: 13, opacity: 0.85, marginTop: 3 }}>{chapter.filePath}</div>
                         <div style={{ fontSize: 11, opacity: 0.6, marginTop: 3 }}>Uploaded: {formatDate(chapter.uploadedAt)}</div>
                       </div>
                     ))}
@@ -411,8 +490,12 @@ export default function AdminDashboardPage() {
               <input
                 type="text"
                 value={subjectIdInput}
-                onChange={(e) => setSubjectIdInput(e.target.value)}
+                onChange={(e) => {
+                  setSubjectIdInput(e.target.value);
+                  setSubjectMessage("");
+                }}
                 placeholder="ex: 0305xxxx"
+                required
                 style={{ height: 40, borderRadius: 8, border: "1px solid #334159", background: "#0f1b2d", color: "#D8E3FB", padding: "0 10px" }}
               />
             </label>
@@ -422,8 +505,12 @@ export default function AdminDashboardPage() {
               <input
                 type="text"
                 value={subjectNameInput}
-                onChange={(e) => setSubjectNameInput(e.target.value)}
+                onChange={(e) => {
+                  setSubjectNameInput(e.target.value);
+                  setSubjectMessage("");
+                }}
                 placeholder="ex: Calculus II"
+                required
                 style={{ height: 40, borderRadius: 8, border: "1px solid #334159", background: "#0f1b2d", color: "#D8E3FB", padding: "0 10px" }}
               />
             </label>
@@ -445,7 +532,17 @@ export default function AdminDashboardPage() {
               </button>
               <button
                 type="submit"
-                style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "none", background: "#FB5C0C", color: "white", fontWeight: 700, cursor: "pointer" }}
+                disabled={createSubjectDisabled}
+                style={{
+                  height: 38,
+                  padding: "0 12px",
+                  borderRadius: 8,
+                  border: "none",
+                  background: createSubjectDisabled ? "#7f8da8" : "#FB5C0C",
+                  color: "white",
+                  fontWeight: 700,
+                  cursor: createSubjectDisabled ? "not-allowed" : "pointer",
+                }}
               >
                 Create Subject
               </button>

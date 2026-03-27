@@ -41,6 +41,16 @@ CREATE TABLE IF NOT EXISTS subjects (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS chapters (
+  id SERIAL PRIMARY KEY,
+  subject_id INTEGER NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
+  chapter_name TEXT NOT NULL,
+  file_path TEXT NOT NULL,
+  uploaded_by_user_id INTEGER NOT NULL REFERENCES users(id),
+  uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+
 """
 
 
