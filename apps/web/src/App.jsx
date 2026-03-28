@@ -7,6 +7,8 @@ import UnauthorizedPage from "./pages/UnauthorizedPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import SubjectPage from "./pages/SubjectPage";
 import ChapterExamEntryPage from "./pages/ChapterExamEntryPage";
+import QuizTestPage from "./pages/QuizTestPage";
+import SummarizeTestPlaceholderPage from "./pages/SummarizeTestPlaceholderPage";
 import { getAccessToken } from "./lib_auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -30,6 +32,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <ChapterExamEntryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quiz/:quizSetId"
+        element={
+          <ProtectedRoute>
+            <QuizTestPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/summarize_test"
+        element={
+          <ProtectedRoute>
+            <SummarizeTestPlaceholderPage />
           </ProtectedRoute>
         }
       />

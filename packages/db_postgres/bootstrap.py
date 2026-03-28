@@ -58,6 +58,26 @@ CREATE TABLE IF NOT EXISTS chapter_tocs (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS quiz_sets (
+  id SERIAL PRIMARY KEY,
+  chapter_id INTEGER NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  questions_json JSONB NOT NULL,
+  status TEXT NOT NULL DEFAULT 'ready',
+  created_by_user_id INTEGER NOT NULL REFERENCES users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS exam_attempts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  quiz_set_id INTEGER NOT NULL REFERENCES quiz_sets(id) ON DELETE CASCADE,
+  answers_json JSONB NOT NULL,
+  result_json JSONB NOT NULL,
+  score INTEGER NOT NULL,
+  total_questions INTEGER NOT NULL,
+  submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
 
 """
