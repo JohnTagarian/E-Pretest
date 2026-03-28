@@ -45,6 +45,14 @@ function masteryLevelFromPercent(percent) {
   return "Mastered / เชี่ยวชาญ";
 }
 
+function masteryColor(level) {
+  if (level === "Mastered") return "#2F8F58";
+  if (level === "Proficient") return "#4AA96C";
+  if (level === "Competent") return "#FB8C3C";
+  if (level === "Developing") return "#D4A017";
+  return "#7B879C";
+}
+
 export default function ChapterExamEntryPage() {
   const { chapterId } = useParams();
   const navigate = useNavigate();
@@ -375,7 +383,7 @@ export default function ChapterExamEntryPage() {
             <div style={{ marginTop: 10, opacity: 0.75 }}>Selected Chapter: {chapter?.chapter_name || `Chapter ${chapterId}`}</div>
           </div>
 
-          <div style={{ background: "#111C2D", borderRadius: 14, padding: 20, border: "1px solid rgba(255,255,255,0.08)", minHeight: 420 }}>
+          <div style={{ background: "#111C2D", borderRadius: 14, padding: 20, border: "1px solid rgba(255,255,255,0.08)", minHeight: 420, display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <h2 style={{ margin: 0, fontSize: 20 }}>Table Of Contents</h2>
               <span style={{ fontSize: 12, opacity: 0.65 }}>{tocItems.length} Topics</span>
@@ -386,7 +394,15 @@ export default function ChapterExamEntryPage() {
             ) : tocItems.length === 0 ? (
               <div style={{ opacity: 0.7 }}>No TOC found yet</div>
             ) : (
-              <div style={{ display: "grid", gap: 10 }}>
+              <div
+                style={{
+                  display: "grid",
+                  gap: 10,
+                  maxHeight: 360,
+                  overflowY: "auto",
+                  paddingRight: 4,
+                }}
+              >
                 {tocItems.map((topic, idx) => (
                   <button key={`${topic}_${idx}`} type="button" style={{ textAlign: "left", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, background: "#0f1b2d", color: "#D8E3FB", padding: "12px 14px", cursor: "default" }}>
                     <span style={{ color: "#FB5C0C", marginRight: 8 }}>{String(idx + 1).padStart(2, "0")}</span>
@@ -510,12 +526,23 @@ export default function ChapterExamEntryPage() {
               <div style={{ fontSize: 13, opacity: 0.75 }}>Loading mastery...</div>
             ) : (
               <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                <span style={{ fontSize: 34, fontWeight: 900, color: "#FB5C0C" }}>{masteryPercent}%</span>
-                <span style={{ fontSize: 14, opacity: 0.85 }}>{masteryLevel}</span>
+                <span style={{ fontSize: 34, fontWeight: 900, color: masteryColor(masteryData?.mastery_level) }}>{masteryPercent}%</span>
+                <span
+                  style={{
+                    fontSize: 13,
+                    color: "#D8E3FB",
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: 999,
+                    padding: "3px 10px",
+                  }}
+                >
+                  {masteryLevel}
+                </span>
               </div>
             )}
             <div style={{ height: 8, borderRadius: 999, background: "#0f1b2d", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${masteryPercent}%`, background: "#FB5C0C" }} />
+              <div style={{ height: "100%", width: `${masteryPercent}%`, background: masteryColor(masteryData?.mastery_level) }} />
             </div>
             {masteryData ? (
               <div style={{ fontSize: 11, opacity: 0.72 }}>
@@ -523,9 +550,6 @@ export default function ChapterExamEntryPage() {
               </div>
             ) : null}
             {masteryError ? <div style={{ fontSize: 11, color: "#ffb4ab" }}>{masteryError}</div> : null}
-            <div style={{ fontSize: 11, opacity: 0.7 }}>
-              0-19 Novice • 20-39 Developing • 40-59 Competent • 60-79 Proficient • 80-100 Mastered
-            </div>
           </div>
         </aside>
       </main>

@@ -28,6 +28,7 @@ export default function AdminDashboardPage() {
   const [chapterFile, setChapterFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
   const [extractingNow, setExtractingNow] = useState(false);
+  const [uploadPopup, setUploadPopup] = useState({ show: false, type: "success", title: "", message: "" });
 
   const [subjectMessage, setSubjectMessage] = useState("");
 
@@ -131,6 +132,7 @@ export default function AdminDashboardPage() {
   const isSubjectIdValid = SUBJECT_ID_REGEX.test(subjectIdInput.trim());
   const createSubjectDisabled = !isAdmin || !isSubjectIdValid || !subjectNameInput.trim();
   const uploadSlideDisabled =
+    extractingNow ||
     !selectedSubject ||
     !chapterName.trim() ||
     !chapterFile ||
@@ -231,49 +233,42 @@ export default function AdminDashboardPage() {
     formData.append("chapter_name", chapterName.trim());
     formData.append("file", chapterFile);
 
-    const response = await apiRequest(`/admin/subjects/${encodeURIComponent(selectedSubject.subjectId)}/chapters/upload`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      setUploadMessage(payload.detail || "Upload failed");
-      return;
-    }
-
-    const uploadPayload = await response.json();
-    const newChapterId = uploadPayload.chapter_id;
-    setChapterName("");
-    setChapterFile(null);
-    setUploadMessage("Upload success. Extracting...");
-    await loadChapters(selectedSubject.subjectId, token);
-
-    if (!newChapterId) {
-      setUploadMessage("Upload success (cannot auto extract: chapter_id missing)");
-      return;
-    }
-
     setExtractingNow(true);
-    const extractResponse = await apiRequest(`/core/chapters/${newChapterId}/extract`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await apiRequest(`/admin/subjects/${encodeURIComponent(selectedSubject.subjectId)}/chapters/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-    if (!extractResponse.ok) {
-      const payload = await extractResponse.json().catch(() => ({}));
-      setUploadMessage(payload.detail || "Extract failed");
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        const message = payload.detail || "Upload failed";
+        setUploadMessage(message);
+        setUploadPopup({
+          show: true,
+          type: "error",
+          title: "Upload Failed",
+          message,
+        });
+        return;
+      }
+
+      setChapterName("");
+      setChapterFile(null);
+      setUploadMessage("Upload + Extract + TOC completed");
+      await loadChapters(selectedSubject.subjectId, token);
+      setUploadPopup({
+        show: true,
+        type: "success",
+        title: "Completed",
+        message: "Upload + Extract MD + Build TOC สำเร็จแล้ว",
+      });
+    } finally {
       setExtractingNow(false);
-      return;
     }
-
-    setExtractingNow(false);
-    setUploadMessage("Upload + Extract completed");
   };
 
   const handleDeleteSubject = async () => {
@@ -340,6 +335,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#081425", color: "#D8E3FB", fontFamily: "Inter, sans-serif" }}>
+      <style>{`@keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
       <header
         style={{
           height: 64,
@@ -537,10 +533,26 @@ export default function AdminDashboardPage() {
                   cursor: uploadSlideDisabled ? "not-allowed" : "pointer",
                 }}
               >
-                Upload Slide PDF
+                {extractingNow ? (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    <span
+                      style={{
+                        width: 14,
+                        height: 14,
+                        border: "2px solid rgba(255,255,255,0.5)",
+                        borderTopColor: "white",
+                        borderRadius: "50%",
+                        display: "inline-block",
+                        animation: "ept-spin 0.9s linear infinite",
+                      }}
+                    />
+                    Extracting...
+                  </span>
+                ) : (
+                  "Upload Slide PDF"
+                )}
               </button>
                 {uploadMessage ? <div style={{ fontSize: 13, opacity: 0.9 }}>{uploadMessage}</div> : null}
-                {extractingNow ? <div style={{ fontSize: 13, opacity: 0.9 }}>Extracting...</div> : null}
               </form>
 
               <div
@@ -696,6 +708,59 @@ export default function AdminDashboardPage() {
           </form>
         </div>
       )}
+
+      {uploadPopup.show ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.45)",
+            display: "grid",
+            placeItems: "center",
+            padding: 16,
+            zIndex: 40,
+          }}
+          onClick={() => setUploadPopup((prev) => ({ ...prev, show: false }))}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: 420,
+              borderRadius: 14,
+              background: "#111C2D",
+              border: `1px solid ${uploadPopup.type === "success" ? "#2f8f58" : "#a94442"}`,
+              boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+              padding: 18,
+              display: "grid",
+              gap: 10,
+            }}
+          >
+            <div style={{ fontSize: 18, fontWeight: 800, color: uploadPopup.type === "success" ? "#7BE495" : "#FFB4AB" }}>
+              {uploadPopup.title}
+            </div>
+            <div style={{ fontSize: 14, opacity: 0.9 }}>{uploadPopup.message}</div>
+            <button
+              type="button"
+              onClick={() => setUploadPopup((prev) => ({ ...prev, show: false }))}
+              style={{
+                justifySelf: "end",
+                border: "none",
+                borderRadius: 8,
+                padding: "8px 12px",
+                background: uploadPopup.type === "success" ? "#2f8f58" : "#a94442",
+                color: "white",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
