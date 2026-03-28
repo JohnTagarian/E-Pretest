@@ -3,8 +3,17 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
 
 from packages.db_postgres.chapter_repo import get_chapter_by_id
-from packages.db_postgres.attempt_repo import create_exam_attempt, get_exam_attempt_by_id
+from packages.db_postgres.attempt_repo import (
+    count_attempts_by_user_chapter,
+    create_exam_attempt,
+    get_exam_attempt_by_id,
+    update_exam_attempt_gap,
+)
 from packages.db_postgres.chapter_toc_repo import get_chapter_toc
+from packages.db_postgres.mastery_repo import (
+    get_or_create_mastery,
+    update_mastery_from_graded_items,
+)
 from packages.db_postgres.quiz_repo import (
     create_quiz_set,
     get_quiz_set_by_id,
@@ -14,6 +23,7 @@ from services.auth.models import UserPublic
 from services.auth.session import get_admin_user, get_current_user
 from services.core_exam.models import (
     ChapterTocResponse,
+    ChapterMasteryResponse,
     ExamAttemptDetailResponse,
     ExtractChapterResponse,
     GenerateQuizResponse,
@@ -21,6 +31,7 @@ from services.core_exam.models import (
     QuizSetSummaryResponse,
     SubmitExamRequest,
     SubmitExamResponse,
+    GapAnalysisResponse,
 )
 from services.core_exam.extract_service import extract_and_save_markdown
 from services.core_exam.quiz_service import (
@@ -28,12 +39,52 @@ from services.core_exam.quiz_service import (
     generate_questions_from_llm,
     read_markdown_file,
 )
+from services.core_exam.gap_service import build_gap_markdown
 
 
 router = APIRouter(
     prefix="/core",
     tags=["core_exam"], 
 )
+
+def _ensure_attempt_access(attempt, current_user: UserPublic) -> None:
+    if attempt.user_id != int(current_user.user_id) and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized to access this attempt")
+
+
+def _mastery_level_label(mastery: float) -> str:
+    pct = int(round(mastery * 100))
+    if pct <= 19:
+        return "Novice"
+    if pct <= 39:
+        return "Developing"
+    if pct <= 59:
+        return "Competent"
+    if pct <= 79:
+        return "Proficient"
+    return "Mastered"
+
+
+def _difficulty_plan_for_generation(attempt_count: int, mastery: float, number_of_questions: int) -> tuple[list[int], list[int]]:
+    if attempt_count == 0:
+        base = [1, 1, 2, 2, 3]
+    elif mastery < 0.35:
+        base = [1, 1, 2, 2, 2]
+    elif mastery < 0.55:
+        base = [2, 2, 2, 3, 3]
+    elif mastery < 0.75:
+        base = [3, 3, 3, 4, 4]
+    else:
+        base = [4, 4, 5, 5, 5]
+
+    if number_of_questions <= len(base):
+        target_levels = base[:number_of_questions]
+    else:
+        target_levels = (base * ((number_of_questions // len(base)) + 1))[:number_of_questions]
+
+    allowed_levels = sorted(set(target_levels))
+    return allowed_levels, target_levels
+
 
 
 @router.post("/chapters/{chapter_id}/extract", response_model=ExtractChapterResponse)
@@ -103,6 +154,16 @@ def generate_exam_set(
     toc_items = toc_row.toc_json or []
     if not toc_items:
         raise HTTPException(status_code=400, detail="TOC is empty")
+
+    number_of_questions = 5
+    user_id = int(current_user.user_id)
+    attempt_count = count_attempts_by_user_chapter(user_id, chapter_id)
+    mastery_row = get_or_create_mastery(user_id, chapter_id)
+    allowed_levels, target_levels = _difficulty_plan_for_generation(
+        attempt_count=attempt_count,
+        mastery=float(mastery_row.mastery),
+        number_of_questions=number_of_questions,
+    )
     
     try:
         context_data = read_markdown_file(toc_row.source_md_path)
@@ -113,13 +174,28 @@ def generate_exam_set(
         questions = generate_questions_from_llm(
             context_data=context_data,
             toc=toc_items,
-            number_of_questions=5,
+            number_of_questions=number_of_questions,
+            allowed_levels=allowed_levels,
+            target_levels=target_levels,
             retry=1,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Generate exam failed: {exc}") from exc
+
+    # Hard enforce first attempt difficulty <= 3
+    if attempt_count == 0:
+        for q in questions:
+            level = int(q.get("level", 1))
+            if level > 3:
+                q["level"] = 3
     
-    title = build_quiz_title(chapter.chapter_name)
+    mastery_percent = int(round(float(mastery_row.mastery) * 100))
+    mastery_level = _mastery_level_label(float(mastery_row.mastery))
+    title = build_quiz_title(
+        chapter.chapter_name,
+        mastery_level=mastery_level,
+        mastery_percent=mastery_percent,
+    )
 
     created = create_quiz_set(
         chapter_id=chapter.id,
@@ -217,6 +293,7 @@ def submit_exam(
             "selected": selected,
             "correct": correct,
             "is_correct": is_correct,
+            "level": int(q.get("level", 1)),
             "choice_1": q.get("choice_1"),
             "choice_2": q.get("choice_2"),
             "choice_3": q.get("choice_3"),
@@ -236,6 +313,12 @@ def submit_exam(
         result=result_json,
         score=score,
         total_questions=total_questions,
+    )
+
+    update_mastery_from_graded_items(
+        user_id=int(current_user.user_id),
+        chapter_id=int(quiz_set.chapter_id),
+        graded_items=review_items,
     )
 
     return SubmitExamResponse(
@@ -267,4 +350,85 @@ def get_exam_attempt(
         submitted_at=attempt.submitted_at,
         answers=attempt.answers_json or {},
         result=attempt.result_json or {},
+    )
+
+
+@router.get("/analysis/gap/{attempt_id}", response_model=GapAnalysisResponse)
+def get_gap_analysis(
+    attempt_id: int,
+    current_user: UserPublic = Depends(get_current_user),
+) -> GapAnalysisResponse:
+    attempt = get_exam_attempt_by_id(attempt_id)
+    if not attempt:
+        raise HTTPException(status_code=404, detail="Attempt not found")
+    _ensure_attempt_access(attempt, current_user)
+
+    return GapAnalysisResponse(
+        attempt_id=attempt.id,
+        gap_status=attempt.gap_status,
+        gap_markdown=attempt.gap_markdown,
+        gap_generated_at=attempt.gap_generated_at,
+    )
+
+
+@router.post("/analysis/gap/{attempt_id}/generate", response_model=GapAnalysisResponse)
+def generate_gap_analysis(
+    attempt_id: int,
+    current_user: UserPublic = Depends(get_current_user),
+) -> GapAnalysisResponse:
+    attempt = get_exam_attempt_by_id(attempt_id)
+    if not attempt:
+        raise HTTPException(status_code=404, detail="Attempt not found")
+    _ensure_attempt_access(attempt, current_user)
+
+    review_items = (attempt.result_json or {}).get("review_items", [])
+    if not isinstance(review_items, list) or not review_items:
+        raise HTTPException(status_code=400, detail="No review data in this attempt")
+
+    # mark generating
+    update_exam_attempt_gap(attempt_id, "generating", None)
+
+    try:
+        gap_markdown = build_gap_markdown(review_items)
+    except Exception as exc:
+        update_exam_attempt_gap(attempt_id, "failed", None)
+        raise HTTPException(status_code=500, detail=f"GAP generation failed: {exc}") from exc
+
+    updated = update_exam_attempt_gap(attempt_id, "ready", gap_markdown)
+    if not updated:
+        raise HTTPException(status_code=500, detail="Failed to persist GAP result")
+
+    return GapAnalysisResponse(
+        attempt_id=updated.id,
+        gap_status=updated.gap_status,
+        gap_markdown=updated.gap_markdown,
+        gap_generated_at=updated.gap_generated_at,
+    )
+
+
+@router.get("/mastery/chapter/{chapter_id}", response_model=ChapterMasteryResponse)
+def get_chapter_mastery(
+    chapter_id: int,
+    current_user: UserPublic = Depends(get_current_user),
+) -> ChapterMasteryResponse:
+    """
+    Get mastery information for a specific chapter.
+    """
+    chapter = get_chapter_by_id(chapter_id)
+    if not chapter:
+        raise HTTPException(status_code=404, detail="Chapter not found")
+
+    user_id = int(current_user.user_id)
+    mastery_row = get_or_create_mastery(user_id=user_id, chapter_id=chapter_id)
+    attempt_count = count_attempts_by_user_chapter(user_id=user_id, chapter_id=chapter_id)
+    mastery_percent = int(round(float(mastery_row.mastery) * 100))
+
+    return ChapterMasteryResponse(
+        chapter_id=chapter_id,
+        attempt_count=attempt_count,
+        alpha=float(mastery_row.alpha),
+        beta=float(mastery_row.beta),
+        mastery=float(mastery_row.mastery),
+        mastery_percent=mastery_percent,
+        mastery_level=_mastery_level_label(float(mastery_row.mastery)),
     )

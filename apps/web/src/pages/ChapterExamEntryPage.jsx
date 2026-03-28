@@ -4,6 +4,7 @@ import { apiRequest } from "../lib_api";
 import { clearAccessToken, getAccessToken } from "../lib_auth";
 
 const ATTEMPTED_SET_STORAGE_KEY = "epretest_attempted_sets_v1";
+const ATTEMPT_SUMMARY_STORAGE_KEY = "epretest_attempt_summary_v1";
 
 function getAttemptedSetMap() {
   try {
@@ -24,6 +25,24 @@ function markSetAsStarted(setId) {
 function isSetNew(setId) {
   const current = getAttemptedSetMap();
   return !current[String(setId)];
+}
+
+function getAttemptSummaryMap() {
+  try {
+    const raw = localStorage.getItem(ATTEMPT_SUMMARY_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function masteryLevelFromPercent(percent) {
+  if (percent <= 19) return "Novice / ผู้เริ่มต้น";
+  if (percent <= 39) return "Developing / กำลังพัฒนา";
+  if (percent <= 59) return "Competent / เข้าใจพื้นฐาน";
+  if (percent <= 79) return "Proficient / ชำนาญ";
+  return "Mastered / เชี่ยวชาญ";
 }
 
 export default function ChapterExamEntryPage() {
@@ -50,6 +69,7 @@ export default function ChapterExamEntryPage() {
   const [durationMode, setDurationMode] = useState("5");
   const [customDuration, setCustomDuration] = useState("");
   const [durationError, setDurationError] = useState("");
+  const [attemptSummaryMap, setAttemptSummaryMap] = useState({});
 
   const chapterIdNum = Number(chapterId);
 
@@ -167,6 +187,10 @@ export default function ChapterExamEntryPage() {
   }, [chapterIdNum, navigate]);
 
   useEffect(() => {
+    setAttemptSummaryMap(getAttemptSummaryMap());
+  }, []);
+
+  useEffect(() => {
     if (!generating) {
       setGeneratingProgress(0);
       return;
@@ -185,6 +209,21 @@ export default function ChapterExamEntryPage() {
     if (!subject) return "Subject Detail";
     return `${subject.name}`;
   }, [subject]);
+
+  const hasPendingSet = useMemo(
+    () => examSets.some((set) => !attemptSummaryMap[String(set.id)]),
+    [examSets, attemptSummaryMap]
+  );
+
+  const masteryPercent = useMemo(() => {
+    const finished = examSets
+      .map((set) => attemptSummaryMap[String(set.id)]?.accuracy)
+      .filter((x) => typeof x === "number");
+    if (finished.length === 0) return 0;
+    return Math.round(finished.reduce((a, b) => a + b, 0) / finished.length);
+  }, [examSets, attemptSummaryMap]);
+
+  const masteryLevel = masteryLevelFromPercent(masteryPercent);
 
   const handleGenerateExam = async () => {
     const token = getAccessToken();
@@ -222,6 +261,19 @@ export default function ChapterExamEntryPage() {
   };
 
   const openStartModal = (setItem) => {
+    const finished = attemptSummaryMap[String(setItem.id)];
+    if (finished) {
+      navigate("/summarize_test", {
+        state: {
+          attemptId: finished.attemptId,
+          quizSetId: setItem.id,
+          subjectName: subject?.name || "",
+          chapterName: chapter?.chapter_name || "",
+        },
+      });
+      return;
+    }
+
     setSelectedSet(setItem);
     setDurationMode("5");
     setCustomDuration("");
@@ -277,6 +329,7 @@ export default function ChapterExamEntryPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#081425", color: "#D8E3FB", fontFamily: "Inter, sans-serif" }}>
+      <style>{`@keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
       <header style={{ height: 64, background: "#111C2D", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ fontWeight: 800, color: "#FB5C0C", letterSpacing: -0.5 }}>E-Pretest</div>
@@ -332,21 +385,44 @@ export default function ChapterExamEntryPage() {
           <button
             type="button"
             onClick={handleGenerateExam}
-            disabled={generating}
+            disabled={generating || hasPendingSet}
             style={{
               width: "100%",
               border: "none",
               borderRadius: 12,
               height: 56,
-              background: generating ? "#7f8da8" : "#FB5C0C",
+              background: generating || hasPendingSet ? "#7f8da8" : "#FB5C0C",
               color: "white",
               fontWeight: 800,
-              cursor: generating ? "not-allowed" : "pointer",
+              cursor: generating || hasPendingSet ? "not-allowed" : "pointer",
               position: "relative",
               overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
             }}
           >
-            {generating ? `Generating... ${generatingProgress}%` : "Generate Exam"}
+            {generating ? (
+              <>
+                <span
+                  style={{
+                    width: 14,
+                    height: 14,
+                    border: "2px solid rgba(255,255,255,0.5)",
+                    borderTopColor: "white",
+                    borderRadius: "50%",
+                    display: "inline-block",
+                    animation: "ept-spin 0.9s linear infinite",
+                  }}
+                />
+                {`Generating... ${generatingProgress}%`}
+              </>
+            ) : hasPendingSet ? (
+              "Finish existing exam set before generating new one"
+            ) : (
+              "Generate Exam"
+            )}
             {generating ? (
               <span
                 style={{
@@ -362,7 +438,7 @@ export default function ChapterExamEntryPage() {
             ) : null}
           </button>
 
-          <div style={{ background: "#111C2D", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", padding: 14, minHeight: 360 }}>
+          <div style={{ background: "#111C2D", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", padding: 14, minHeight: 360, display: "grid", gap: 10 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <h3 style={{ margin: 0, fontSize: 18 }}>Exam Sets</h3>
               <span style={{ fontSize: 12, opacity: 0.65 }}>{examSets.length} Sets</span>
@@ -371,14 +447,18 @@ export default function ChapterExamEntryPage() {
             {examSets.length === 0 ? (
               <div style={{ opacity: 0.7 }}>{examLoading ? "Loading exam sets..." : "No generated exam set yet"}</div>
             ) : (
-              <div style={{ display: "grid", gap: 10 }}>
+              <div style={{ display: "grid", gap: 10, maxHeight: 320, overflowY: "auto", paddingRight: 4 }}>
                 {examSets.map((set) => {
-                  const newSet = isSetNew(set.id);
+                  const summary = attemptSummaryMap[String(set.id)];
+                  const finished = Boolean(summary);
+                  const newSet = !finished && isSetNew(set.id);
                   return (
                   <div key={set.id} style={{ background: "#0f1b2d", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 12, display: "grid", gap: 8 }}>
-                    <div style={{ fontWeight: 700 }}>{set.title}</div>
+                    <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.35 }}>{set.title}</div>
                     <div style={{ fontSize: 12, opacity: 0.75 }}>{set.questionCount} Questions</div>
-                    <div style={{ fontSize: 11, opacity: 0.65 }}>{newSet ? "New exam set" : "Started before"}</div>
+                    <div style={{ fontSize: 11, opacity: 0.8 }}>
+                      {finished ? `Finish • Accuracy ${summary.accuracy}%` : newSet ? "New exam set" : "In progress"}
+                    </div>
                     <button
                       type="button"
                       onClick={() => openStartModal(set)}
@@ -386,19 +466,36 @@ export default function ChapterExamEntryPage() {
                         height: 36,
                         border: "none",
                         borderRadius: 8,
-                        background: newSet ? "#2F8F58" : "#2A3548",
+                        background: finished ? "#2A3548" : newSet ? "#2F8F58" : "#2A3548",
                         color: "#D8E3FB",
                         fontWeight: 700,
                         cursor: "pointer",
                       }}
                     >
-                      Start Set
+                      {finished ? "View Summary" : "Start Set"}
                     </button>
                   </div>
                 )})}
               </div>
             )}
             {examError ? <div style={{ marginTop: 10, fontSize: 12, color: "#ffb4ab" }}>{examError}</div> : null}
+          </div>
+
+          <div style={{ background: "#111C2D", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", padding: 14, display: "grid", gap: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ margin: 0, fontSize: 18 }}>Mastery Profile</h3>
+              <span style={{ fontSize: 12, opacity: 0.7 }}>Chapter Level</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              <span style={{ fontSize: 34, fontWeight: 900, color: "#FB5C0C" }}>{masteryPercent}%</span>
+              <span style={{ fontSize: 14, opacity: 0.85 }}>{masteryLevel}</span>
+            </div>
+            <div style={{ height: 8, borderRadius: 999, background: "#0f1b2d", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${masteryPercent}%`, background: "#FB5C0C" }} />
+            </div>
+            <div style={{ fontSize: 11, opacity: 0.7 }}>
+              0-19 Novice • 20-39 Developing • 40-59 Competent • 60-79 Proficient • 80-100 Mastered
+            </div>
           </div>
         </aside>
       </main>

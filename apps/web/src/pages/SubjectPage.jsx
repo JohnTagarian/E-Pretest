@@ -8,9 +8,87 @@ export default function SubjectPage() {
   const [profile, setProfile] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [chaptersBySubject, setChaptersBySubject] = useState({});
+  const [masteryByChapter, setMasteryByChapter] = useState({});
+  const [loadingMasteryByChapter, setLoadingMasteryByChapter] = useState({});
   const [selectedSubjectId, setSelectedSubjectId] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [chapterLoadError, setChapterLoadError] = useState("");
+
+  const masteryColor = (level) => {
+    if (level === "Mastered") return "#2F8F58";
+    if (level === "Proficient") return "#4AA96C";
+    if (level === "Competent") return "#FB5C0C";
+    if (level === "Developing") return "#B07D2A";
+    return "#7B879C";
+  };
+
+  const loadMasteryByChapterIds = async (chapterIds, token) => {
+    if (!Array.isArray(chapterIds) || chapterIds.length === 0) return;
+
+    setLoadingMasteryByChapter((prev) => {
+      const next = { ...prev };
+      chapterIds.forEach((id) => {
+        next[id] = true;
+      });
+      return next;
+    });
+
+    await Promise.all(
+      chapterIds.map(async (chapterId) => {
+        try {
+          const response = await apiRequest(`/core/mastery/chapter/${chapterId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!response.ok) {
+            setMasteryByChapter((prev) => ({
+              ...prev,
+              [chapterId]: null,
+            }));
+            return;
+          }
+          const payload = await response.json();
+          setMasteryByChapter((prev) => ({
+            ...prev,
+            [chapterId]: payload,
+          }));
+        } catch {
+          setMasteryByChapter((prev) => ({
+            ...prev,
+            [chapterId]: null,
+          }));
+        } finally {
+          setLoadingMasteryByChapter((prev) => ({
+            ...prev,
+            [chapterId]: false,
+          }));
+        }
+      })
+    );
+  };
+
+  const fetchChaptersBySubjectId = async (subjectId, token) => {
+    const response = await apiRequest(`/admin/subjects/${encodeURIComponent(subjectId)}/chapters`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      const errPayload = await response.json().catch(() => ({}));
+      return {
+        ok: false,
+        mapped: [],
+        error: errPayload.detail || "Failed to load chapters",
+      };
+    }
+
+    const payload = await response.json();
+    const mapped = payload.map((row) => ({
+      id: row.chapter_id,
+      chapterName: row.chapter_name,
+      uploadedAt: row.uploaded_at,
+    }));
+    return { ok: true, mapped, error: "" };
+  };
 
   const loadSubjects = async (token) => {
     const response = await apiRequest("/admin/subjects", {
@@ -19,7 +97,7 @@ export default function SubjectPage() {
 
     if (!response.ok) {
       setSubjects([]);
-      return;
+      return [];
     }
 
     const payload = await response.json();
@@ -35,28 +113,21 @@ export default function SubjectPage() {
       if (prev && mapped.some((s) => s.subjectId === prev)) return prev;
       return mapped[0].subjectId;
     });
+    return mapped;
   };
 
   const loadChapters = async (subjectId, token) => {
     if (!subjectId) return;
-
-    const response = await apiRequest(`/admin/subjects/${encodeURIComponent(subjectId)}/chapters`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!response.ok) {
+    setChapterLoadError("");
+    const result = await fetchChaptersBySubjectId(subjectId, token);
+    if (!result.ok) {
       setChaptersBySubject((prev) => ({ ...prev, [subjectId]: [] }));
+      setChapterLoadError(result.error);
       return;
     }
-
-    const payload = await response.json();
-    const mapped = payload.map((row) => ({
-      id: row.chapter_id,
-      chapterName: row.chapter_name,
-      uploadedAt: row.uploaded_at,
-    }));
-
+    const mapped = result.mapped;
     setChaptersBySubject((prev) => ({ ...prev, [subjectId]: mapped }));
+    await loadMasteryByChapterIds(mapped.map((c) => c.id), token);
   };
 
   useEffect(() => {
@@ -80,7 +151,20 @@ export default function SubjectPage() {
 
         const user = await me.json();
         setProfile(user);
-        await loadSubjects(token);
+        const rows = await loadSubjects(token);
+
+        // Auto-select subject that already has at least 1 chapter (if any).
+        let subjectToSelect = rows[0]?.subjectId || null;
+        for (const row of rows) {
+          const preview = await fetchChaptersBySubjectId(row.subjectId, token);
+          if (preview.ok && preview.mapped.length > 0) {
+            subjectToSelect = row.subjectId;
+            break;
+          }
+        }
+        if (subjectToSelect) {
+          setSelectedSubjectId(subjectToSelect);
+        }
       } finally {
         setLoading(false);
       }
@@ -202,13 +286,42 @@ export default function SubjectPage() {
 
               <div style={{ display: "grid", gap: 10, overflowY: "auto", paddingRight: 4 }}>
                 {selectedChapters.length === 0 ? (
-                  <div style={{ opacity: 0.65 }}>No chapter in this subject yet</div>
+                  <div style={{ opacity: 0.65 }}>
+                    {chapterLoadError ? `Load chapter failed: ${chapterLoadError}` : "No chapter in this subject yet"}
+                  </div>
                 ) : (
                   selectedChapters.map((chapter) => (
                     <div key={chapter.id} style={{ background: "#0f1b2d", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 12, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                      <div>
+                      <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 700 }}>{chapter.chapterName}</div>
                         <div style={{ fontSize: 12, opacity: 0.7 }}>Chapter ID: {chapter.id}</div>
+                        <div style={{ marginTop: 8 }}>
+                          {loadingMasteryByChapter[chapter.id] ? (
+                            <div style={{ fontSize: 12, opacity: 0.75 }}>Loading mastery...</div>
+                          ) : masteryByChapter[chapter.id] ? (
+                            <>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                                <span style={{ fontSize: 12, opacity: 0.88 }}>
+                                  Mastery: {masteryByChapter[chapter.id].mastery_percent}% ({masteryByChapter[chapter.id].mastery_level})
+                                </span>
+                                <span style={{ fontSize: 11, color: "#9AA6BF" }}>
+                                  Attempts: {masteryByChapter[chapter.id].attempt_count}
+                                </span>
+                              </div>
+                              <div style={{ height: 6, borderRadius: 999, background: "#111C2D", overflow: "hidden" }}>
+                                <div
+                                  style={{
+                                    height: "100%",
+                                    width: `${masteryByChapter[chapter.id].mastery_percent}%`,
+                                    background: masteryColor(masteryByChapter[chapter.id].mastery_level),
+                                  }}
+                                />
+                              </div>
+                            </>
+                          ) : (
+                            <div style={{ fontSize: 12, opacity: 0.75 }}>Mastery: No data yet</div>
+                          )}
+                        </div>
                       </div>
                       <button
                         type="button"

@@ -61,7 +61,8 @@ def build_toc_from_markdown(context_data: str, verbose: bool = True) -> tuple[li
         1. สกัดเฉพาะหัวข้อที่มีอยู่ในเอกสารจริงๆ และนำมาจัดหมวดหมู่หลัก (Categorize) ให้ชัดเจน
         2. ไม่เจาะจงลึกถึงหัวข้อย่อย (Sub-topics) ที่ยิบย่อยจนเกินไป
         3. ไม่เอาหัวข้อที่เกี่ยวกับการสรุป (Summary) หรืออ้างอิง
-        4. ตอบกลับเป็นรูปแบบ JSON ตาม Schema นี้เท่านั้น:
+        4. ทั้งหมดต้องไม่เกิน 15 หัวข้อ
+        5. ตอบกลับเป็นรูปแบบ JSON ตาม Schema นี้เท่านั้น:
         {json_schema}
         """),
         HumanMessage(content=f"จงสร้าง Table of content จากข้อมูลนี้:\n{context_data}")

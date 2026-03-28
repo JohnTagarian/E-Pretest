@@ -81,3 +81,24 @@ class ExamAttemptDetailResponse(BaseModel):
     submitted_at: str
     answers: dict[str, int]
     result: dict
+
+
+class GapAnalysisResponse(BaseModel):
+    attempt_id: int
+    gap_status: str
+    gap_markdown: str | None
+    gap_generated_at: str | None
+
+
+class GapLLMOutput(BaseModel):
+    gap_markdown: str = Field(min_length=20, max_length=2000)
+
+
+class ChapterMasteryResponse(BaseModel):
+    chapter_id: int
+    attempt_count: int
+    alpha: float
+    beta: float
+    mastery: float
+    mastery_percent: int
+    mastery_level: str

@@ -17,6 +17,7 @@ function buildMockQuestions(questionCount, chapterName = "Chapter") {
     question: `[Mock] ${chapterName} - Question ${idx + 1}`,
     choices: ["Choice A", "Choice B", "Choice C", "Choice D"],
     correctAnswer: 1,
+    level: 2,
     choiceExplanations: {
       1: "This is the mock correct explanation.",
       2: "This is mock explanation for choice B.",
@@ -85,6 +86,7 @@ export default function QuizTestPage() {
               question: q.question,
               choices: [q.choice_1, q.choice_2, q.choice_3, q.choice_4],
               correctAnswer: q.correct_answer,
+              level: q.level || 1,
               choiceExplanations: {
                 1: q.choice_1_exp || "",
                 2: q.choice_2_exp || "",
@@ -272,6 +274,19 @@ export default function QuizTestPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ background: "#FB5C0C", color: "white", fontWeight: 700, borderRadius: 8, padding: "6px 10px", fontSize: 13 }}>Question {currentQuestion.id}</span>
                 <span style={{ height: 1, background: "#2A3548", flex: 1 }} />
+                <span
+                  style={{
+                    background: "#1F2A3C",
+                    border: "1px solid #334159",
+                    color: "#D8E3FB",
+                    fontWeight: 800,
+                    borderRadius: 999,
+                    padding: "4px 10px",
+                    fontSize: 12,
+                  }}
+                >
+                  Lv.{currentQuestion.level || 1}
+                </span>
               </div>
 
               <div style={{ fontSize: 24, lineHeight: 1.45, fontWeight: 600 }}>{currentQuestion.question}</div>

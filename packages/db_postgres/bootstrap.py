@@ -76,7 +76,25 @@ CREATE TABLE IF NOT EXISTS exam_attempts (
   result_json JSONB NOT NULL,
   score INTEGER NOT NULL,
   total_questions INTEGER NOT NULL,
-  submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  gap_status TEXT NOT NULL DEFAULT 'none',
+  gap_markdown TEXT,
+  gap_generated_at TIMESTAMPTZ
+
+);
+
+ALTER TABLE exam_attempts ADD COLUMN IF NOT EXISTS gap_status TEXT NOT NULL DEFAULT 'none';
+ALTER TABLE exam_attempts ADD COLUMN IF NOT EXISTS gap_markdown TEXT;
+ALTER TABLE exam_attempts ADD COLUMN IF NOT EXISTS gap_generated_at TIMESTAMPTZ;
+
+CREATE TABLE IF NOT EXISTS user_chapter_mastery (
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  chapter_id INTEGER NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+  alpha DOUBLE PRECISION NOT NULL DEFAULT 2.0,
+  beta DOUBLE PRECISION NOT NULL DEFAULT 2.0,
+  mastery DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, chapter_id)
 );
 
 
