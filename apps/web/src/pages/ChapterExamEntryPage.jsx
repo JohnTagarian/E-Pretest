@@ -70,6 +70,9 @@ export default function ChapterExamEntryPage() {
   const [customDuration, setCustomDuration] = useState("");
   const [durationError, setDurationError] = useState("");
   const [attemptSummaryMap, setAttemptSummaryMap] = useState({});
+  const [masteryData, setMasteryData] = useState(null);
+  const [masteryLoading, setMasteryLoading] = useState(false);
+  const [masteryError, setMasteryError] = useState("");
 
   const chapterIdNum = Number(chapterId);
 
@@ -99,6 +102,29 @@ export default function ChapterExamEntryPage() {
       : [];
     setExamSets(mapped);
     setExamLoading(false);
+  };
+
+  const loadMastery = async (token) => {
+    setMasteryLoading(true);
+    setMasteryError("");
+    try {
+      const response = await apiRequest(`/core/mastery/chapter/${chapterIdNum}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const errPayload = await response.json().catch(() => ({}));
+        setMasteryData(null);
+        setMasteryError(errPayload.detail || "Failed to load mastery");
+        return;
+      }
+      const payload = await response.json();
+      setMasteryData(payload);
+    } catch {
+      setMasteryData(null);
+      setMasteryError("Network error while loading mastery");
+    } finally {
+      setMasteryLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -173,6 +199,7 @@ export default function ChapterExamEntryPage() {
         setTocLoading(false);
 
         await loadExamSets(token);
+        await loadMastery(token);
       } catch (error) {
         setTocLoading(false);
         setTocError("Failed to load chapter data");
@@ -215,15 +242,8 @@ export default function ChapterExamEntryPage() {
     [examSets, attemptSummaryMap]
   );
 
-  const masteryPercent = useMemo(() => {
-    const finished = examSets
-      .map((set) => attemptSummaryMap[String(set.id)]?.accuracy)
-      .filter((x) => typeof x === "number");
-    if (finished.length === 0) return 0;
-    return Math.round(finished.reduce((a, b) => a + b, 0) / finished.length);
-  }, [examSets, attemptSummaryMap]);
-
-  const masteryLevel = masteryLevelFromPercent(masteryPercent);
+  const masteryPercent = typeof masteryData?.mastery_percent === "number" ? masteryData.mastery_percent : 0;
+  const masteryLevel = masteryData?.mastery_level || masteryLevelFromPercent(masteryPercent);
 
   const handleGenerateExam = async () => {
     const token = getAccessToken();
@@ -486,13 +506,23 @@ export default function ChapterExamEntryPage() {
               <h3 style={{ margin: 0, fontSize: 18 }}>Mastery Profile</h3>
               <span style={{ fontSize: 12, opacity: 0.7 }}>Chapter Level</span>
             </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ fontSize: 34, fontWeight: 900, color: "#FB5C0C" }}>{masteryPercent}%</span>
-              <span style={{ fontSize: 14, opacity: 0.85 }}>{masteryLevel}</span>
-            </div>
+            {masteryLoading ? (
+              <div style={{ fontSize: 13, opacity: 0.75 }}>Loading mastery...</div>
+            ) : (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span style={{ fontSize: 34, fontWeight: 900, color: "#FB5C0C" }}>{masteryPercent}%</span>
+                <span style={{ fontSize: 14, opacity: 0.85 }}>{masteryLevel}</span>
+              </div>
+            )}
             <div style={{ height: 8, borderRadius: 999, background: "#0f1b2d", overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${masteryPercent}%`, background: "#FB5C0C" }} />
             </div>
+            {masteryData ? (
+              <div style={{ fontSize: 11, opacity: 0.72 }}>
+                Attempts: {masteryData.attempt_count} | alpha: {masteryData.alpha.toFixed(2)} beta: {masteryData.beta.toFixed(2)}
+              </div>
+            ) : null}
+            {masteryError ? <div style={{ fontSize: 11, color: "#ffb4ab" }}>{masteryError}</div> : null}
             <div style={{ fontSize: 11, opacity: 0.7 }}>
               0-19 Novice • 20-39 Developing • 40-59 Competent • 60-79 Proficient • 80-100 Mastered
             </div>
