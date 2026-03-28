@@ -50,6 +50,15 @@ CREATE TABLE IF NOT EXISTS chapters (
   uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS chapter_tocs (
+  chapter_id INTEGER PRIMARY KEY REFERENCES chapters(id) ON DELETE CASCADE,
+  toc_json JSONB NOT NULL,
+  source_md_path TEXT NOT NULL,
+  method TEXT NOT NULL DEFAULT 'markdown_heading',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+
 
 """
 

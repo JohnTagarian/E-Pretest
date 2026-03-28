@@ -7,6 +7,8 @@ function formatDate(date) {
   return new Date(date).toLocaleString();
 }
 
+const SUBJECT_ID_REGEX = /^\d{9}$/;
+
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
   const isNarrowScreen = typeof window !== "undefined" && window.innerWidth < 980;
@@ -99,6 +101,10 @@ export default function AdminDashboardPage() {
         }
 
         const payload = await response.json();
+        if (payload?.role === "student") {
+          navigate("/subjects", { replace: true });
+          return;
+        }
         setProfile(payload);
         await loadSubjects(token);
       } finally {
@@ -122,7 +128,8 @@ export default function AdminDashboardPage() {
 
   const selectedSubjectChapters = chaptersBySubject[selectedSubjectId] || [];
   const isAdmin = profile?.role === "admin";
-  const createSubjectDisabled = !isAdmin || !subjectIdInput.trim() || !subjectNameInput.trim();
+  const isSubjectIdValid = SUBJECT_ID_REGEX.test(subjectIdInput.trim());
+  const createSubjectDisabled = !isAdmin || !isSubjectIdValid || !subjectNameInput.trim();
   const uploadSlideDisabled =
     !selectedSubject ||
     !chapterName.trim() ||
@@ -150,6 +157,10 @@ export default function AdminDashboardPage() {
 
     if (!sid || !sname) {
       setSubjectMessage("Please provide Subject ID and Name");
+      return;
+    }
+    if (!SUBJECT_ID_REGEX.test(sid)) {
+      setSubjectMessage("Subject ID must be exactly 9 digits");
       return;
     }
 
@@ -618,13 +629,21 @@ export default function AdminDashboardPage() {
                 type="text"
                 value={subjectIdInput}
                 onChange={(e) => {
-                  setSubjectIdInput(e.target.value);
+                  const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 9);
+                  setSubjectIdInput(digitsOnly);
                   setSubjectMessage("");
                 }}
-                placeholder="ex: 0305xxxx"
+                placeholder="ex: 030124567"
+                inputMode="numeric"
+                pattern="[0-9]{9}"
+                title="Subject ID must be exactly 9 digits (0-9)"
+                maxLength={9}
                 required
                 style={{ height: 40, borderRadius: 8, border: "1px solid #334159", background: "#0f1b2d", color: "#D8E3FB", padding: "0 10px" }}
               />
+              {subjectIdInput && !isSubjectIdValid ? (
+                <span style={{ color: "#ffb4ab", fontSize: 12 }}>Subject ID must be exactly 9 digits</span>
+              ) : null}
             </label>
 
             <label style={{ display: "grid", gap: 6, fontSize: 13 }}>

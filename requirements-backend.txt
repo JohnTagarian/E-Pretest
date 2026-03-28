@@ -5,3 +5,5 @@ python-multipart>=0.0.9
 psycopg[binary]>=3.2.1
 langchain-pymupdf4llm
 pymupdf
+langchain-openai
+langchain-core

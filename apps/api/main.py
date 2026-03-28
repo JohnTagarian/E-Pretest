@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from packages.shared.env_loader import load_local_env
+load_local_env()
+
+
 from services.user import api as user
 from services.admin import api as admin
 from services.auth import api as auth
 from services.core_exam import api as core_exam
 
-load_local_env()
 
 app = FastAPI()
 

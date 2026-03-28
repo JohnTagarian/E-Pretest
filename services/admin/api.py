@@ -5,6 +5,15 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from psycopg.errors import UniqueViolation
 
+import logging
+from services.core_exam.extract_service import extract_and_save_markdown
+from services.core_exam.toc_service import build_toc_from_markdown
+from packages.db_postgres.chapter_toc_repo import upsert_chapter_toc
+
+from services.admin.models import ActionResponse, ChapterResponse, CreateSubjectRequest, SubjectResponse
+from services.auth.models import UserPublic
+from services.auth.session import get_admin_user, get_current_user
+
 from packages.db_postgres.chapter_repo import (
     create_chapter,
     delete_chapter_by_id,
@@ -17,9 +26,6 @@ from packages.db_postgres.subject_repo import (
     get_subject_by_subject_id,
     list_subjects,
 )
-from services.admin.models import ActionResponse, ChapterResponse, CreateSubjectRequest, SubjectResponse
-from services.auth.models import UserPublic
-from services.auth.session import get_admin_user
 
 router = APIRouter(
     prefix="/admin",
@@ -36,6 +42,8 @@ def get_admin_me(current_user: UserPublic = Depends(get_admin_user)) -> dict:
         "role": current_user.role,
     }
 
+
+logger = logging.getLogger(__name__)
 
 @router.post("/subjects", response_model=SubjectResponse)
 def create_subject_api(
@@ -61,7 +69,7 @@ def create_subject_api(
 
 @router.get("/subjects", response_model=list[SubjectResponse])
 def list_subjects_api(
-    _: UserPublic = Depends(get_admin_user),
+    _: UserPublic = Depends(get_current_user),
 ) -> list[SubjectResponse]:
     rows = list_subjects()
     return [
@@ -102,6 +110,25 @@ async def upload_chapter_api(
         file_path=str(out_path),
         uploaded_by_user_id=int(current_user.user_id),
     )
+
+    # Auto extract markdown + build TOC (best effort, upload must still succeed)
+    try:
+        md_output_path = Path(f"outputs/markdown/subject_id_{subject.id}") / f"chapter_{chapter.id}.md"
+        extract_result = extract_and_save_markdown(str(out_path), str(md_output_path))
+
+        markdown_text = Path(extract_result["output_path"]).read_text(encoding="utf-8")
+        toc_items, method = build_toc_from_markdown(markdown_text)
+
+        if toc_items:
+            upsert_chapter_toc(
+                chapter_id=chapter.id,
+                toc_items=toc_items,
+                source_md_path=extract_result["output_path"],
+                method=method,
+            )
+    except Exception as exc:
+        logger.exception("Auto extract/toc failed for chapter_id=%s: %s", chapter.id, exc)
+
     return ChapterResponse(
         chapter_id=chapter.id,
         chapter_name=chapter.chapter_name,
@@ -113,7 +140,7 @@ async def upload_chapter_api(
 @router.get("/subjects/{subject_id}/chapters", response_model=list[ChapterResponse])
 def list_chapters_api(
     subject_id: str,
-    _: UserPublic = Depends(get_admin_user),
+    _: UserPublic = Depends(get_current_user),
 ) -> list[ChapterResponse]:
     subject = get_subject_by_subject_id(subject_id)
     if not subject:

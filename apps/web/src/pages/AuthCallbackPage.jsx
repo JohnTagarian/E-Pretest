@@ -47,7 +47,12 @@ export default function AuthCallbackPage() {
         const callbackPayload = await callbackResponse.json();
         window.sessionStorage.setItem(callbackKey, "1");
         setAccessToken(callbackPayload.access_token);
-        navigate("/archive", { replace: true });
+        const role = callbackPayload?.user?.role;
+        if (role === "student") {
+          navigate("/subjects", { replace: true });
+        } else {
+          navigate("/archive", { replace: true });
+        }
       } catch (callbackError) {
         setError(callbackError instanceof Error ? callbackError.message : "Unexpected callback error");
       }
