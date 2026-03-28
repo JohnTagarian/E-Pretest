@@ -16,3 +16,8 @@ class ChapterResponse(BaseModel):
     file_path: str
     uploaded_by_user_id: int
     uploaded_at: str
+
+
+class ActionResponse(BaseModel):
+    success: bool
+    message: str

@@ -57,3 +57,16 @@ def get_subject_by_subject_id(subject_id: str) -> DbSubject | None:
             cur.execute(sql, (subject_id,))
             row = cur.fetchone()
     return DbSubject(*row) if row else None
+
+
+def delete_subject_by_subject_id(subject_id: str) -> bool:
+    sql = """
+    DELETE FROM subjects
+    WHERE subject_id = %s
+    """
+    with psycopg.connect(_database_url()) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (subject_id,))
+            deleted = cur.rowcount > 0
+        conn.commit()
+    return deleted

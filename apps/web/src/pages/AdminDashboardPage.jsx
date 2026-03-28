@@ -25,8 +25,7 @@ export default function AdminDashboardPage() {
   const [chapterName, setChapterName] = useState("");
   const [chapterFile, setChapterFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
-  const [extractMessage, setExtractMessage] = useState("");
-  const [extractingChapterId, setExtractingChapterId] = useState(null);
+  const [extractingNow, setExtractingNow] = useState(false);
 
   const [subjectMessage, setSubjectMessage] = useState("");
 
@@ -235,39 +234,97 @@ export default function AdminDashboardPage() {
       return;
     }
 
+    const uploadPayload = await response.json();
+    const newChapterId = uploadPayload.chapter_id;
     setChapterName("");
     setChapterFile(null);
-    setUploadMessage("Upload success");
+    setUploadMessage("Upload success. Extracting...");
     await loadChapters(selectedSubject.subjectId, token);
-  };
 
-  const handleExtractChapter = async (chapterId) => {
-    const token = getAccessToken();
-    if (!token) {
-      navigate("/login", { replace: true });
+    if (!newChapterId) {
+      setUploadMessage("Upload success (cannot auto extract: chapter_id missing)");
       return;
     }
 
-    setExtractingChapterId(chapterId);
-    setExtractMessage("");
-
-    const response = await apiRequest(`/core/chapters/${chapterId}/extract`, {
+    setExtractingNow(true);
+    const extractResponse = await apiRequest(`/core/chapters/${newChapterId}/extract`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      setExtractMessage(payload.detail || "Extract failed");
-      setExtractingChapterId(null);
+    if (!extractResponse.ok) {
+      const payload = await extractResponse.json().catch(() => ({}));
+      setUploadMessage(payload.detail || "Extract failed");
+      setExtractingNow(false);
       return;
     }
 
-    const payload = await response.json();
-    setExtractMessage(`Extracted: ${payload.output_path}`);
-    setExtractingChapterId(null);
+    setExtractingNow(false);
+    setUploadMessage("Upload + Extract completed");
+  };
+
+  const handleDeleteSubject = async () => {
+    if (!selectedSubject) return;
+    if (!window.confirm(`Delete subject ${selectedSubject.subjectId}?`)) return;
+
+    const token = getAccessToken();
+    if (!token) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    const response = await apiRequest(`/admin/subjects/${encodeURIComponent(selectedSubject.subjectId)}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      setUploadMessage(payload.detail || "Delete subject failed");
+      return;
+    }
+
+    setUploadMessage("Subject deleted");
+    setSelectedSubjectId(null);
+    setChaptersBySubject((prev) => {
+      const next = { ...prev };
+      delete next[selectedSubject.subjectId];
+      return next;
+    });
+    await loadSubjects(token);
+  };
+
+  const handleDeleteChapter = async (chapterId) => {
+    if (!selectedSubject) return;
+    if (!window.confirm("Delete this chapter?")) return;
+
+    const token = getAccessToken();
+    if (!token) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    const response = await apiRequest(
+      `/admin/subjects/${encodeURIComponent(selectedSubject.subjectId)}/chapters/${chapterId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      setUploadMessage(payload.detail || "Delete chapter failed");
+      return;
+    }
+
+    setUploadMessage("Chapter deleted");
+    await loadChapters(selectedSubject.subjectId, token);
   };
 
   return (
@@ -388,7 +445,27 @@ export default function AdminDashboardPage() {
             minHeight: 0,
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 22 }}>Subject Details</h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <h2 style={{ margin: 0, fontSize: 22 }}>Subject Details</h2>
+            {selectedSubject ? (
+              <button
+                type="button"
+                onClick={handleDeleteSubject}
+                style={{
+                  height: 34,
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "0 10px",
+                  background: "#aa3b3b",
+                  color: "white",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                Delete Subject
+              </button>
+            ) : null}
+          </div>
 
           {!selectedSubject ? (
             <div style={{ opacity: 0.75 }}>Select subject from left panel</div>
@@ -452,7 +529,7 @@ export default function AdminDashboardPage() {
                 Upload Slide PDF
               </button>
                 {uploadMessage ? <div style={{ fontSize: 13, opacity: 0.9 }}>{uploadMessage}</div> : null}
-                {extractMessage ? <div style={{ fontSize: 13, opacity: 0.9 }}>{extractMessage}</div> : null}
+                {extractingNow ? <div style={{ fontSize: 13, opacity: 0.9 }}>Extracting...</div> : null}
               </form>
 
               <div
@@ -482,20 +559,19 @@ export default function AdminDashboardPage() {
                         <div style={{ marginTop: 8 }}>
                           <button
                             type="button"
-                            onClick={() => handleExtractChapter(chapter.id)}
-                            disabled={extractingChapterId === chapter.id}
+                            onClick={() => handleDeleteChapter(chapter.id)}
                             style={{
                               height: 32,
                               border: "none",
                               borderRadius: 8,
                               padding: "0 10px",
-                              background: extractingChapterId === chapter.id ? "#7f8da8" : "#2f8f83",
+                              background: "#aa3b3b",
                               color: "white",
                               fontWeight: 700,
-                              cursor: extractingChapterId === chapter.id ? "not-allowed" : "pointer",
+                              cursor: "pointer",
                             }}
                           >
-                            {extractingChapterId === chapter.id ? "Extracting..." : "Extract Markdown"}
+                            Delete Chapter
                           </button>
                         </div>
                       </div>

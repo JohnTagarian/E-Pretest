@@ -59,3 +59,16 @@ def get_chapter_by_id(chapter_id: int) -> DbChapter | None:
             cur.execute(sql, (chapter_id,))
             row = cur.fetchone()
     return DbChapter(*row) if row else None
+
+
+def delete_chapter_by_id(chapter_id: int) -> bool:
+    sql = """
+    DELETE FROM chapters
+    WHERE id = %s
+    """
+    with psycopg.connect(_database_url()) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (chapter_id,))
+            deleted = cur.rowcount > 0
+        conn.commit()
+    return deleted

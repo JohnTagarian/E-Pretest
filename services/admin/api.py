@@ -1,19 +1,25 @@
-from fastapi import APIRouter, Depends, HTTPException
-from psycopg.errors import UniqueViolation
-
-from packages.db_postgres.subject_repo import create_subject, list_subjects
-from services.admin.models import CreateSubjectRequest, SubjectResponse
-from services.auth.models import UserPublic
-from services.auth.session import get_admin_user
-
+import shutil
 from pathlib import Path
 from uuid import uuid4
-from fastapi import UploadFile, File, Form
-from packages.db_postgres.chapter_repo import create_chapter, list_chapters_by_subject
-from packages.db_postgres.subject_repo import get_subject_by_subject_id
-from services.admin.models import ChapterResponse
 
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from psycopg.errors import UniqueViolation
 
+from packages.db_postgres.chapter_repo import (
+    create_chapter,
+    delete_chapter_by_id,
+    get_chapter_by_id,
+    list_chapters_by_subject,
+)
+from packages.db_postgres.subject_repo import (
+    create_subject,
+    delete_subject_by_subject_id,
+    get_subject_by_subject_id,
+    list_subjects,
+)
+from services.admin.models import ActionResponse, ChapterResponse, CreateSubjectRequest, SubjectResponse
+from services.auth.models import UserPublic
+from services.auth.session import get_admin_user
 
 router = APIRouter(
     prefix="/admin",
@@ -124,3 +130,49 @@ def list_chapters_api(
         )
         for r in rows
     ]
+
+
+@router.delete("/subjects/{subject_id}", response_model=ActionResponse)
+def delete_subject_api(
+    subject_id: str,
+    _: UserPublic = Depends(get_admin_user),
+) -> ActionResponse:
+    subject = get_subject_by_subject_id(subject_id)
+    if not subject:
+        raise HTTPException(status_code=404, detail="Subject not found")
+
+    deleted = delete_subject_by_subject_id(subject_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Subject not found")
+
+    shutil.rmtree(Path("data/uploads") / subject_id, ignore_errors=True)
+    shutil.rmtree(Path("outputs/markdown") / f"subject_id_{subject.id}", ignore_errors=True)
+    return ActionResponse(success=True, message="Subject deleted")
+
+
+@router.delete("/subjects/{subject_id}/chapters/{chapter_id}", response_model=ActionResponse)
+def delete_chapter_api(
+    subject_id: str,
+    chapter_id: int,
+    _: UserPublic = Depends(get_admin_user),
+) -> ActionResponse:
+    subject = get_subject_by_subject_id(subject_id)
+    if not subject:
+        raise HTTPException(status_code=404, detail="Subject not found")
+
+    chapter = get_chapter_by_id(chapter_id)
+    if not chapter or chapter.subject_id != subject.id:
+        raise HTTPException(status_code=404, detail="Chapter not found")
+
+    deleted = delete_chapter_by_id(chapter_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Chapter not found")
+
+    try:
+        Path(chapter.file_path).unlink(missing_ok=True)
+    except Exception:
+        pass
+
+    markdown_path = Path("outputs/markdown") / f"subject_id_{subject.id}" / f"chapter_{chapter.id}.md"
+    markdown_path.unlink(missing_ok=True)
+    return ActionResponse(success=True, message="Chapter deleted")
