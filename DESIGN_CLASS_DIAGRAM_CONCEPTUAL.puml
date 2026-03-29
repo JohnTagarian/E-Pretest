@@ -1,0 +1,240 @@
+@startuml
+skinparam style strictuml
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+hide empty members
+
+title E-Pretest Design Class Diagram (Conceptual Mapping)
+
+note top
+This diagram is a conceptual mapping for a function-based codebase.
+Classes below represent module responsibilities (not 1:1 source classes).
+end note
+
+package "API Layer (Controllers)" {
+  class AuthController <<Controller>> {
+    +googleStartGet()
+    +googleStartPost(): AuthStartResponse
+    +googleCallback(code, state): AuthCallbackResponse
+    +logout(token): LogoutResponse
+  }
+
+  class UserController <<Controller>> {
+    +getMe(token): UserPublic
+  }
+
+  class AdminController <<Controller>> {
+    +getAdminMe(token)
+    +createSubject(payload)
+    +listSubjects(token)
+    +uploadChapter(subjectId, chapterName, pdfFile, token)
+    +listChapters(subjectId, token)
+    +deleteSubject(subjectId, token)
+    +deleteChapter(subjectId, chapterId, token)
+  }
+
+  class CoreExamController <<Controller>> {
+    +extractChapter(chapterId, token)
+    +getChapterToc(chapterId, token)
+    +generateExamSet(chapterId, token)
+    +listExamSets(chapterId, token)
+    +getExamSetDetail(quizSetId, token)
+    +submitExam(quizSetId, payload, token)
+    +getExamAttempt(attemptId, token)
+    +getGapAnalysis(attemptId, token)
+    +generateGapAnalysis(attemptId, token)
+    +getChapterMastery(chapterId, token)
+  }
+}
+
+package "Application / Domain Services" {
+  class AuthService <<Service>> {
+    +issueState(): string
+    +verifyState(state): void
+    +buildGoogleAuthUrl(state): string
+    +exchangeCodeForAccessToken(code): string
+    +fetchGoogleUserInfo(accessToken): map
+    +validateEmailDomain(email): void
+    +upsertUserFromGoogle(email, name): UserPublic
+    +issueAppToken(user): string
+  }
+
+  class SubjectService <<Service>> {
+    +createSubject(subjectId, name, actor)
+    +listSubjects()
+    +deleteSubject(subjectId)
+  }
+
+  class ChapterService <<Service>> {
+    +uploadChapter(subjectId, chapterName, file, actor)
+    +listChapters(subjectId)
+    +deleteChapter(subjectId, chapterId)
+  }
+
+  class ExtractionService <<Service>> {
+    +extractAndSaveMarkdown(pdfPath, outputPath)
+  }
+
+  class TocService <<Service>> {
+    +buildTocFromMarkdown(markdownText): (tocItems, method)
+    +upsertChapterToc(chapterId, tocItems, mdPath, method)
+  }
+
+  class QuizGenerationService <<Service>> {
+    +planDifficulty(attemptCount, mastery, qCount)
+    +readContextMarkdown(path): string
+    +generateQuestionsFromLLM(context, toc, qCount, levels)
+    +buildQuizTitle(chapterName, masteryLevel, masteryPercent): string
+    +createQuizSet(chapterId, title, questions, actor)
+  }
+
+  class ExamScoringService <<Service>> {
+    +validateAnswerPayload(answers, totalQuestions): void
+    +gradeAttempt(quizQuestions, answers): (score, reviewItems)
+    +createExamAttempt(userId, quizSetId, answers, result, score, total)
+  }
+
+  class GapAnalysisService <<Service>> {
+    +getGap(attemptId, actor)
+    +generateGap(attemptId, actor): GapAnalysisResponse
+    +buildGapMarkdown(reviewItems): string
+  }
+
+  class MasteryService <<Service>> {
+    +getOrCreate(userId, chapterId)
+    +updateFromGradedItems(userId, chapterId, reviewItems)
+    +getChapterMasterySummary(userId, chapterId)
+  }
+
+  class SessionStore <<Service>> {
+    +issueToken(user): string
+    +revokeToken(token): void
+    +getUserByToken(token): UserPublic?
+  }
+}
+
+package "Repository Layer (PostgreSQL)" {
+  class UserRepository <<Repository>> {
+    +upsertUserFromGoogle(email, fullName): DbUser
+    +getUserById(id): DbUser?
+  }
+
+  class SubjectRepository <<Repository>> {
+    +createSubject(subjectId, name, actorId): DbSubject
+    +listSubjects(): List<DbSubject>
+    +getBySubjectId(subjectId): DbSubject?
+    +deleteBySubjectId(subjectId): bool
+  }
+
+  class ChapterRepository <<Repository>> {
+    +createChapter(subjectId, chapterName, filePath, actorId): DbChapter
+    +listBySubject(subjectId): List<DbChapter>
+    +getById(chapterId): DbChapter?
+    +deleteById(chapterId): bool
+  }
+
+  class ChapterTocRepository <<Repository>> {
+    +upsertChapterToc(chapterId, tocItems, mdPath, method)
+    +getChapterToc(chapterId): DbChapterToc?
+  }
+
+  class QuizSetRepository <<Repository>> {
+    +createQuizSet(chapterId, title, questions, actorId): DbQuizSet
+    +listByChapter(chapterId): List<DbQuizSet>
+    +getById(quizSetId): DbQuizSet?
+  }
+
+  class AttemptRepository <<Repository>> {
+    +createExamAttempt(...): DbExamAttempt
+    +getAttemptById(attemptId): DbExamAttempt?
+    +updateGap(attemptId, status, markdown): DbExamAttempt?
+    +countAttemptsByUserChapter(userId, chapterId): int
+  }
+
+  class MasteryRepository <<Repository>> {
+    +getOrCreateMastery(userId, chapterId): DbMastery
+    +updateMasteryFromGradedItems(userId, chapterId, items): DbMastery
+  }
+}
+
+package "External / Infrastructure" {
+  class GoogleOAuthProvider <<External>> {
+    +authorize()
+    +token()
+    +userinfo()
+  }
+
+  class DeepSeekLLM <<External>> {
+    +invoke(messages): text
+  }
+
+  class LocalFileSystem <<External>> {
+    +save(file, path)
+    +read(path)
+    +delete(path)
+  }
+
+  class PostgreSQL <<Database>>
+}
+
+' ===== Controller -> Service =====
+AuthController ..> AuthService
+UserController ..> SessionStore
+AdminController ..> SubjectService
+AdminController ..> ChapterService
+AdminController ..> ExtractionService
+AdminController ..> TocService
+CoreExamController ..> QuizGenerationService
+CoreExamController ..> ExamScoringService
+CoreExamController ..> GapAnalysisService
+CoreExamController ..> MasteryService
+CoreExamController ..> ExtractionService
+CoreExamController ..> TocService
+
+' ===== Service -> Repository / External =====
+AuthService ..> UserRepository
+AuthService ..> SessionStore
+AuthService ..> GoogleOAuthProvider
+
+SubjectService ..> SubjectRepository
+ChapterService ..> ChapterRepository
+ChapterService ..> SubjectRepository
+TocService ..> ChapterTocRepository
+
+QuizGenerationService ..> ChapterRepository
+QuizGenerationService ..> ChapterTocRepository
+QuizGenerationService ..> QuizSetRepository
+QuizGenerationService ..> AttemptRepository
+QuizGenerationService ..> MasteryRepository
+QuizGenerationService ..> DeepSeekLLM
+QuizGenerationService ..> LocalFileSystem
+
+ExamScoringService ..> QuizSetRepository
+ExamScoringService ..> AttemptRepository
+ExamScoringService ..> MasteryRepository
+
+GapAnalysisService ..> AttemptRepository
+GapAnalysisService ..> DeepSeekLLM
+
+MasteryService ..> MasteryRepository
+MasteryService ..> AttemptRepository
+MasteryService ..> ChapterRepository
+
+' ===== Repository -> DB =====
+UserRepository ..> PostgreSQL
+SubjectRepository ..> PostgreSQL
+ChapterRepository ..> PostgreSQL
+ChapterTocRepository ..> PostgreSQL
+QuizSetRepository ..> PostgreSQL
+AttemptRepository ..> PostgreSQL
+MasteryRepository ..> PostgreSQL
+
+note bottom
+Use this diagram as a design artifact for architecture explanation.
+Source code implementation is function-based modules, not class-based OOP.
+end note
+
+@enduml

@@ -1,0 +1,141 @@
+@startuml
+skinparam style strictuml
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title E-Pretest Class Diagram (Client-Server + Modular Monolith)
+
+package "Database Entities (PostgreSQL)" {
+  class User {
+    +id: int
+    +email: text
+    +full_name: text
+    +role: text
+    +created_at: timestamptz
+  }
+
+  class Material {
+    +id: int
+    +filename: text
+    +stored_path: text
+    +uploaded_by_user_id: int
+    +uploaded_at: timestamptz
+  }
+
+  class Subject {
+    +id: int
+    +subject_id: text
+    +name: text
+    +created_by_user_id: int
+    +created_at: timestamptz
+  }
+
+  class Chapter {
+    +id: int
+    +subject_id: int
+    +chapter_name: text
+    +file_path: text
+    +uploaded_by_user_id: int
+    +uploaded_at: timestamptz
+  }
+
+  class ChapterTOC {
+    +chapter_id: int <<PK/FK>>
+    +toc_json: jsonb
+    +source_md_path: text
+    +method: text
+    +updated_at: timestamptz
+  }
+
+  class QuizSet {
+    +id: int
+    +chapter_id: int
+    +title: text
+    +questions_json: jsonb
+    +status: text
+    +created_by_user_id: int
+    +created_at: timestamptz
+  }
+
+  class QuizQuestion <<Value Object>> {
+    +question: text
+    +question_tag: text
+    +choice_1..choice_4: text
+    +correct_answer: int(1..4)
+    +level: int(1..5)
+    +choice_1_exp..choice_4_exp: text
+  }
+
+  class ExamAttempt {
+    +id: int
+    +user_id: int
+    +quiz_set_id: int
+    +answers_json: jsonb
+    +result_json: jsonb
+    +score: int
+    +total_questions: int
+    +submitted_at: timestamptz
+    +gap_status: text
+    +gap_markdown: text?
+    +gap_generated_at: timestamptz?
+  }
+
+  class UserChapterMastery {
+    +user_id: int <<PK/FK>>
+    +chapter_id: int <<PK/FK>>
+    +alpha: double
+    +beta: double
+    +mastery: double
+    +updated_at: timestamptz
+  }
+}
+
+package "Runtime/Auth (In-Memory)" {
+  class UserPublic <<DTO>> {
+    +user_id: string
+    +email: string
+    +full_name: string
+    +role: string
+  }
+
+  class SessionStore <<Module State>> {
+    +issue_token(user: UserPublic): string
+    +revoke_token(token: string): void
+    +get_user_by_token(token: string): UserPublic?
+  }
+}
+
+' ===== Relationships =====
+User "1" -- "0..*" Subject : creates >
+User "1" -- "0..*" Chapter : uploads >
+User "1" -- "0..*" QuizSet : creates >
+User "1" -- "0..*" ExamAttempt : submits >
+User "1" -- "0..*" Material : uploads >
+
+Subject "1" *-- "0..*" Chapter
+Chapter "1" -- "0..1" ChapterTOC
+Chapter "1" *-- "0..*" QuizSet
+QuizSet "1" -- "0..*" ExamAttempt
+
+User "1" -- "0..*" UserChapterMastery
+Chapter "1" -- "0..*" UserChapterMastery
+
+QuizSet "1" *-- "1..*" QuizQuestion : questions_json
+ExamAttempt ..> QuizQuestion : result_json / answers_json
+
+SessionStore ..> UserPublic : stores token -> user
+UserPublic ..> User : mapped from DB user
+
+note right of QuizSet
+questions_json is persisted as JSONB
+(each item follows QuizQuestion schema)
+end note
+
+note right of ExamAttempt
+GAP analysis is stored in this table
+(gap_status, gap_markdown, gap_generated_at)
+end note
+
+@enduml
