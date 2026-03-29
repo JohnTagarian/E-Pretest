@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../lib_api";
 import { clearAccessToken, getAccessToken } from "../lib_auth";
+import LogoutConfirmDialog from "../components/LogoutConfirmDialog";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,12 +80,17 @@ export default function ProfilePage() {
         )}
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={() => setShowLogoutDialog(true)}
           style={{ marginTop: 16, height: 44, padding: "0 16px", borderRadius: 8, border: "none", background: "#ff8f6f", color: "#3d1100", fontWeight: 700 }}
         >
           Logout
         </button>
       </section>
+      <LogoutConfirmDialog
+        open={showLogoutDialog}
+        onCancel={() => setShowLogoutDialog(false)}
+        onConfirm={handleLogout}
+      />
     </main>
   );
 }

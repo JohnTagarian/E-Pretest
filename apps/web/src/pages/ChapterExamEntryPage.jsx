@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiRequest } from "../lib_api";
 import { clearAccessToken, getAccessToken } from "../lib_auth";
+import LogoutConfirmDialog from "../components/LogoutConfirmDialog";
 
 const ATTEMPTED_SET_STORAGE_KEY = "epretest_attempted_sets_v1";
 const ATTEMPT_SUMMARY_STORAGE_KEY = "epretest_attempt_summary_v1";
@@ -81,6 +82,7 @@ export default function ChapterExamEntryPage() {
   const [masteryData, setMasteryData] = useState(null);
   const [masteryLoading, setMasteryLoading] = useState(false);
   const [masteryError, setMasteryError] = useState("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const chapterIdNum = Number(chapterId);
 
@@ -295,6 +297,7 @@ export default function ChapterExamEntryPage() {
         state: {
           attemptId: finished.attemptId,
           quizSetId: setItem.id,
+          chapterId: chapterIdNum,
           subjectName: subject?.name || "",
           chapterName: chapter?.chapter_name || "",
         },
@@ -328,6 +331,7 @@ export default function ChapterExamEntryPage() {
       state: {
         quizSet: selectedSet,
         durationMinutes: Math.floor(minutes),
+        chapterId: chapterIdNum,
         subjectName: subject?.name || "",
         subjectCode: subject?.subject_id || "",
         chapterName: chapter?.chapter_name || "",
@@ -356,7 +360,7 @@ export default function ChapterExamEntryPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Inter, sans-serif", position: "relative" }}>
+    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Plus Jakarta Sans, Manrope, Prompt, sans-serif", position: "relative" }}>
       <style>{`
         @keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         .entry-shell::before{
@@ -412,6 +416,33 @@ export default function ChapterExamEntryPage() {
           font-weight:800;
           letter-spacing:.3px;
         }
+        .entry-exam-list{scrollbar-width:thin; scrollbar-color:#2A3E5D #102038;}
+        .entry-exam-list::-webkit-scrollbar{width:7px}
+        .entry-exam-list::-webkit-scrollbar-thumb{background:#2A3E5D;border-radius:999px}
+        .entry-exam-item{
+          background:rgba(255,255,255,.03);
+          border:1px solid rgba(255,255,255,.06);
+          border-radius:12px;
+          transition:all .2s ease;
+        }
+        .entry-exam-item:hover{
+          background:rgba(255,255,255,.06);
+          border-color:rgba(255,255,255,.12);
+          transform:translateY(-1px);
+        }
+        .entry-summary-btn{
+          height:28px;
+          border:1px solid rgba(216,227,251,.2);
+          border-radius:6px;
+          background:transparent;
+          color:#D8E3FB;
+          font-size:12px;
+          font-weight:600;
+          padding:0 12px;
+          cursor:pointer;
+          transition:all .2s ease;
+        }
+        .entry-summary-btn:hover{background:#2A3548}
       `}</style>
       <div className="entry-shell" />
       <header style={{ height: 66, background: "rgba(13, 28, 46, 0.9)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(255, 255, 255, 0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", position: "sticky", top: 0, zIndex: 5 }}>
@@ -458,7 +489,7 @@ export default function ChapterExamEntryPage() {
           <div style={{ width: 1, height: 24, background: "rgba(255, 255, 255, 0.1)" }} />
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => setShowLogoutDialog(true)}
             className="entry-btn entry-ghost"
             style={{
               borderRadius: 8,
@@ -580,16 +611,26 @@ export default function ChapterExamEntryPage() {
             ) : null}
           </button>
 
-          <div className="entry-soft" style={{ padding: 14, minHeight: 360, display: "grid", gap: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div className="entry-soft" style={{ padding: 20, minHeight: 360, background: "#111C2D", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <h3 style={{ margin: 0, fontSize: 18 }}>Exam Sets</h3>
-              <span style={{ fontSize: 12, opacity: 0.65 }}>{examSets.length} Sets</span>
+              <span style={{ fontSize: 12, color: "#a3b1cc", fontWeight: 500 }}>{examSets.length} Sets</span>
             </div>
 
             {examSets.length === 0 ? (
-              <div style={{ opacity: 0.7 }}>{examLoading ? "Loading exam sets..." : "No generated exam set yet"}</div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", border: "2px dashed rgba(255,255,255,0.1)", borderRadius: 12, padding: "30px 20px", background: "rgba(255,255,255,0.02)" }}>
+                <div style={{ fontSize: 42, marginBottom: 16, opacity: 0.8, filter: "grayscale(0.5)" }}>📝</div>
+                <h4 style={{ margin: "0 0 8px 0", fontSize: 16, fontWeight: 700, color: "#D8E3FB" }}>
+                  {examLoading ? "Loading Exam Sets..." : "No Exam Sets Yet"}
+                </h4>
+                <p style={{ margin: 0, fontSize: 13, color: "#a3b1cc", lineHeight: 1.6, maxWidth: 260 }}>
+                  คุณยังไม่เคยทำข้อสอบในบทเรียนนี้
+                  <br />
+                  คลิกปุ่ม <strong style={{ color: "#FB5C0C" }}>Generate Exam</strong> เพื่อเริ่มต้นทดสอบความรู้ได้เลย
+                </p>
+              </div>
             ) : (
-              <div style={{ display: "grid", gap: 10, maxHeight: 320, overflowY: "auto", paddingRight: 4 }}>
+              <div className="entry-exam-list" style={{ display: "grid", gap: 12, maxHeight: 320, overflowY: "auto", paddingRight: 6 }}>
                 {examSets.map((set) => {
                   const summary = attemptSummaryMap[String(set.id)];
                   const finished = Boolean(summary);
@@ -597,34 +638,29 @@ export default function ChapterExamEntryPage() {
                   const accuracy = finished ? Number(summary.accuracy || 0) : 0;
                   const pillBg = accuracy >= 60 ? "rgba(47,143,88,.2)" : "rgba(123,135,157,.22)";
                   const pillColor = accuracy >= 60 ? "#85E1A3" : "#C7D0DF";
+                  const dateText = String(set.generatedAt || "").slice(0, 10) || "-";
                   return (
-                  <div key={set.id} className="entry-set-card" style={{ borderRadius: 12, padding: 12, display: "grid", gap: 8 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "start" }}>
-                      <div>
-                        <div style={{ fontWeight: 800, fontSize: 15, lineHeight: 1.35 }}>{set.title}</div>
-                        <div style={{ fontSize: 11, opacity: 0.62, marginTop: 4 }}>Set ID: {set.id}</div>
+                  <div key={set.id} className="entry-exam-item" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "start" }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, fontSize: 15, color: "#D8E3FB", marginBottom: 4, lineHeight: 1.35 }}>{set.title}</div>
+                        <div style={{ fontSize: 12, color: "#a3b1cc", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                          <span>Set ID: {set.id}</span>
+                        </div>
                       </div>
-                      <span className="entry-pill" style={{ background: pillBg, color: pillColor }}>
-                        Accuracy {accuracy}%
+                      <span className="entry-pill" style={{ background: pillBg, color: pillColor, whiteSpace: "nowrap" }}>
+                        Acc: {accuracy}%
                       </span>
                     </div>
-                    <div style={{ fontSize: 12, opacity: 0.75 }}>{set.questionCount} Questions • {finished ? "Finished" : newSet ? "New exam set" : "In progress"}</div>
-                    <button
-                      type="button"
-                      onClick={() => openStartModal(set)}
-                      className="entry-btn"
-                      style={{
-                        height: 34,
-                        border: finished ? "1px solid rgba(216,227,251,.25)" : "none",
-                        borderRadius: 8,
-                        background: finished ? "transparent" : newSet ? "#2F8F58" : "#2A3548",
-                        color: "#D8E3FB",
-                        fontWeight: 800,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {finished ? "View Summary" : "Start Set"}
-                    </button>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 12 }}>
+                      <div style={{ fontSize: 11, color: "#8a9bbd" }}>
+                        {set.questionCount} Questions • {dateText}
+                      </div>
+                      <button type="button" onClick={() => openStartModal(set)} className={finished ? "entry-summary-btn" : "entry-btn"} style={finished ? undefined : { height: 28, border: "none", borderRadius: 6, background: newSet ? "#2F8F58" : "#2A3548", color: "#D8E3FB", fontSize: 12, fontWeight: 700, padding: "0 12px", cursor: "pointer" }}>
+                        {finished ? "View Summary" : "Start Set"}
+                      </button>
+                    </div>
                   </div>
                 )})}
               </div>
@@ -669,6 +705,11 @@ export default function ChapterExamEntryPage() {
           </div>
         </aside>
       </main>
+      <LogoutConfirmDialog
+        open={showLogoutDialog}
+        onCancel={() => setShowLogoutDialog(false)}
+        onConfirm={handleLogout}
+      />
 
       {popup.show ? (
         <div

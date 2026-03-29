@@ -202,9 +202,18 @@ export default function SummarizeTestPlaceholderPage() {
   };
 
   const isGapReady = gapStatus === "ready" && Boolean(gapMarkdown);
+  const backChapterId = Number(data.chapterId || attemptData?.chapter_id || 0);
+
+  const handleBackToEntry = () => {
+    if (Number.isFinite(backChapterId) && backChapterId > 0) {
+      navigate(`/chapter/${backChapterId}/exam`, { replace: true });
+      return;
+    }
+    navigate("/subjects", { replace: true });
+  };
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Inter, sans-serif", padding: 24, position: "relative" }}>
+    <main style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Plus Jakarta Sans, Manrope, Prompt, sans-serif", padding: 24, position: "relative" }}>
       <style>{`
         .sum-shell::before{
           content:"";
@@ -242,6 +251,56 @@ export default function SummarizeTestPlaceholderPage() {
         .sum-review-scroll{scrollbar-width:thin; scrollbar-color:#2A3E5D #102038;}
         .sum-review-scroll::-webkit-scrollbar{width:7px}
         .sum-review-scroll::-webkit-scrollbar-thumb{background:#2A3E5D; border-radius:999px}
+        .sum-gap-modal{
+          width:min(720px, 100%);
+          max-height:85vh;
+          display:flex;
+          flex-direction:column;
+          background:#111C2D;
+          border:1px solid rgba(255,255,255,.08);
+          border-radius:16px;
+          box-shadow:0 24px 48px rgba(0,0,0,.4),0 4px 12px rgba(0,0,0,.2);
+          overflow:hidden;
+        }
+        .sum-gap-head{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          padding:20px 24px;
+          border-bottom:1px solid rgba(255,255,255,.06);
+          background:rgba(255,255,255,.02);
+        }
+        .sum-gap-close{
+          height:32px;
+          border-radius:8px;
+          border:1px solid transparent;
+          background:rgba(255,255,255,.05);
+          color:#a3b1cc;
+          padding:0 12px;
+          font-size:13px;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .sum-gap-close:hover{
+          background:rgba(255,255,255,.1);
+          color:#fff;
+        }
+        .sum-gap-body{
+          padding:24px;
+          overflow-y:auto;
+          display:grid;
+          gap:20px;
+        }
+        .sum-gap-md{
+          background:linear-gradient(to right, rgba(251,92,12,.08), rgba(251,92,12,.02));
+          border-left:3px solid #FB5C0C;
+          border-radius:0 8px 8px 0;
+          padding:18px 20px;
+          color:#D8E3FB;
+        }
+        .sum-gap-body::-webkit-scrollbar{width:8px}
+        .sum-gap-body::-webkit-scrollbar-thumb{background:#2A3E5D;border-radius:999px}
       `}</style>
       <div className="sum-shell" />
       <div style={{ maxWidth: 1220, margin: "0 auto", display: "grid", gap: 16, position: "relative", zIndex: 1 }}>
@@ -278,7 +337,7 @@ export default function SummarizeTestPlaceholderPage() {
             </button>
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={handleBackToEntry}
               className="sum-btn sum-back"
               style={{ height: 34, borderRadius: 8, padding: "0 8px", cursor: "pointer", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 5 }}
             >
@@ -427,52 +486,36 @@ export default function SummarizeTestPlaceholderPage() {
             padding: 16,
             zIndex: 1000,
           }}
+          onClick={() => setShowGapModal(false)}
         >
-          <div
-            style={{
-              width: "min(920px, 100%)",
-              maxHeight: "85vh",
-              overflowY: "auto",
-              background: "#111C2D",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 14,
-              padding: 18,
-              display: "grid",
-              gap: 12,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h2 style={{ margin: 0, fontSize: 22 }}>GAP Analysis</h2>
+          <div className="sum-gap-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="sum-gap-head">
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#D8E3FB", display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ color: "#FB5C0C" }}>✨</span> AI GAP Analysis
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowGapModal(false)}
-                style={{ height: 34, borderRadius: 8, border: "1px solid #334159", background: "#1b2738", color: "#D8E3FB", padding: "0 10px", cursor: "pointer" }}
+                className="sum-gap-close"
               >
                 Close
               </button>
             </div>
 
-            <div
-              style={{
-                background: "#0f1b2d",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 10,
-                padding: 14,
-                color: "#D8E3FB",
-              }}
-            >
+            <div className="sum-gap-body">
+              <div className="sum-gap-md">
               {gapMarkdown ? (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    h1: ({ children }) => <h1 style={{ margin: "8px 0 10px", fontSize: 26 }}>{children}</h1>,
-                    h2: ({ children }) => <h2 style={{ margin: "8px 0 10px", fontSize: 22 }}>{children}</h2>,
-                    h3: ({ children }) => <h3 style={{ margin: "8px 0 8px", fontSize: 18 }}>{children}</h3>,
-                    p: ({ children }) => <p style={{ margin: "8px 0", lineHeight: 1.7 }}>{children}</p>,
-                    ul: ({ children }) => <ul style={{ margin: "8px 0", paddingLeft: 20 }}>{children}</ul>,
-                    ol: ({ children }) => <ol style={{ margin: "8px 0", paddingLeft: 20 }}>{children}</ol>,
-                    li: ({ children }) => <li style={{ margin: "4px 0", lineHeight: 1.6 }}>{children}</li>,
-                    strong: ({ children }) => <strong style={{ color: "#FFFFFF" }}>{children}</strong>,
+                    h1: ({ children }) => <h1 style={{ margin: "0 0 10px", fontSize: 26 }}>{children}</h1>,
+                    h2: ({ children }) => <h2 style={{ margin: "0 0 10px", fontSize: 22 }}>{children}</h2>,
+                    h3: ({ children }) => <h3 style={{ margin: "0 0 8px", fontSize: 18 }}>{children}</h3>,
+                    p: ({ children }) => <p style={{ margin: "0 0 10px", lineHeight: 1.7, fontSize: 15, color: "#b4c5e4" }}>{children}</p>,
+                    ul: ({ children }) => <ul style={{ margin: "0 0 10px", paddingLeft: 20 }}>{children}</ul>,
+                    ol: ({ children }) => <ol style={{ margin: "0 0 10px", paddingLeft: 20 }}>{children}</ol>,
+                    li: ({ children }) => <li style={{ margin: "4px 0", lineHeight: 1.6, color: "#b4c5e4" }}>{children}</li>,
+                    strong: ({ children }) => <strong style={{ color: "#fff", fontWeight: 600 }}>{children}</strong>,
                     em: ({ children }) => <em style={{ color: "#E8EEF8" }}>{children}</em>,
                     code: ({ children }) => (
                       <code
@@ -495,6 +538,7 @@ export default function SummarizeTestPlaceholderPage() {
               ) : (
                 <div style={{ opacity: 0.8 }}>No GAP data available yet.</div>
               )}
+              </div>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../lib_api";
 import { clearAccessToken, getAccessToken } from "../lib_auth";
+import LogoutConfirmDialog from "../components/LogoutConfirmDialog";
 
 export default function SubjectPage() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function SubjectPage() {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(true);
   const [chapterLoadError, setChapterLoadError] = useState("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const masteryColor = (level) => {
     if (level === "Mastered") return "#2F8F58";
@@ -216,7 +218,7 @@ export default function SubjectPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Inter, sans-serif", position: "relative" }}>
+    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Plus Jakarta Sans, Manrope, Prompt, sans-serif", position: "relative" }}>
       <style>{`
         .sub-shell::before{
           content:"";
@@ -316,7 +318,7 @@ export default function SubjectPage() {
             </span>
           </div>
           <div style={{ width: 1, height: 24, background: "rgba(255, 255, 255, 0.1)" }} />
-          <button type="button" onClick={handleLogout} className="sub-btn" style={{ borderRadius: 8, padding: "6px 12px", cursor: "pointer", color: "#ff8b8b", background: "transparent", border: "1px solid rgba(255, 139, 139, 0.2)", fontSize: 13 }}>
+          <button type="button" onClick={() => setShowLogoutDialog(true)} className="sub-btn" style={{ borderRadius: 8, padding: "6px 12px", cursor: "pointer", color: "#ff8b8b", background: "transparent", border: "1px solid rgba(255, 139, 139, 0.2)", fontSize: 13 }}>
             Logout
           </button>
         </div>
@@ -459,6 +461,11 @@ export default function SubjectPage() {
           )}
         </section>
       </main>
+      <LogoutConfirmDialog
+        open={showLogoutDialog}
+        onCancel={() => setShowLogoutDialog(false)}
+        onConfirm={handleLogout}
+      />
     </div>
   );
 }

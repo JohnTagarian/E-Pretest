@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../lib_api";
 import { clearAccessToken, getAccessToken } from "../lib_auth";
+import LogoutConfirmDialog from "../components/LogoutConfirmDialog";
 
 function formatDate(date) {
   return new Date(date).toLocaleString();
@@ -41,6 +42,7 @@ export default function AdminDashboardPage() {
   const [uploadPopup, setUploadPopup] = useState({ show: false, type: "success", title: "", message: "" });
 
   const [subjectMessage, setSubjectMessage] = useState("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const loadSubjects = async (token) => {
     const response = await apiRequest("/admin/subjects", {
@@ -353,7 +355,7 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Inter, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Plus Jakarta Sans, Manrope, Prompt, sans-serif" }}>
       <style>{`
         @keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         .adm-btn{transition:all .2s ease}
@@ -375,29 +377,48 @@ export default function AdminDashboardPage() {
       `}</style>
       <header
         style={{
-          height: 64,
-          background: "#111C2D",
+          height: 66,
+          background: "rgba(13, 28, 46, 0.9)",
+          backdropFilter: "blur(8px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 24px",
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+          position: "sticky",
+          top: 0,
+          zIndex: 5,
         }}
       >
-        <div style={{ fontWeight: 800, color: "#FB5C0C", letterSpacing: -0.5 }}>E-Pretest</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ fontWeight: 900, color: "rgb(251, 92, 12)", letterSpacing: -0.5, fontSize: 20 }}>E-Pretest</div>
+          <span style={{ opacity: 0.4, fontSize: 14 }}>/</span>
+          <span style={{ opacity: 0.85, fontSize: 14, fontWeight: 500, color: "rgb(216, 227, 251)" }}>Subjects</span>
+        </div>
+
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontSize: 13, opacity: 0.85 }}>
-            {loadingProfile ? "Loading..." : `${profile?.full_name || "Unknown"} (${profile?.role || "-"})`}
-          </span>
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, rgb(42, 64, 95), rgb(31, 51, 79))", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 13, color: "rgb(255, 255, 255)", border: "1px solid rgba(255, 255, 255, 0.1)", boxShadow: "rgba(255, 255, 255, 0.1) 0px 2px 4px inset" }}>
+            {String(profile?.full_name || "U").trim().charAt(0).toUpperCase()}
+          </div>
+          <div style={{ display: "grid", gap: 1 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgb(216, 227, 251)", lineHeight: 1.2 }}>
+              {loadingProfile ? "Loading..." : profile?.full_name || "Unknown"}
+            </span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: "rgb(251, 92, 12)", textTransform: "uppercase", letterSpacing: 0.5, opacity: 0.9 }}>
+              {profile?.role || "-"}
+            </span>
+          </div>
+          <div style={{ width: 1, height: 24, background: "rgba(255, 255, 255, 0.1)" }} />
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => setShowLogoutDialog(true)}
             style={{
-              border: "none",
               borderRadius: 8,
-              padding: "8px 12px",
-              background: "#2A3548",
-              color: "#D8E3FB",
+              padding: "6px 12px",
+              color: "rgb(255, 139, 139)",
+              background: "transparent",
+              border: "1px solid rgba(255, 139, 139, 0.2)",
+              fontSize: 13,
               cursor: "pointer",
             }}
           >
@@ -414,7 +435,7 @@ export default function AdminDashboardPage() {
           display: "grid",
           gridTemplateColumns: isNarrowScreen ? "1fr" : "minmax(320px, 380px) 1fr",
           gap: 20,
-          height: "calc(100vh - 64px)",
+          height: "calc(100vh - 66px)",
         }}
       >
         <section style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -793,6 +814,12 @@ export default function AdminDashboardPage() {
           </form>
         </div>
       )}
+
+      <LogoutConfirmDialog
+        open={showLogoutDialog}
+        onCancel={() => setShowLogoutDialog(false)}
+        onConfirm={handleLogout}
+      />
 
       {uploadPopup.show ? (
         <div
