@@ -204,77 +204,118 @@ export default function SummarizeTestPlaceholderPage() {
   const isGapReady = gapStatus === "ready" && Boolean(gapMarkdown);
 
   return (
-    <main style={{ minHeight: "100vh", background: "#081425", color: "#D8E3FB", fontFamily: "Inter, sans-serif", padding: 24 }}>
-      <div style={{ maxWidth: 1220, margin: "0 auto", display: "grid", gap: 16 }}>
+    <main style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Inter, sans-serif", padding: 24, position: "relative" }}>
+      <style>{`
+        .sum-shell::before{
+          content:"";
+          position:fixed;
+          inset:0;
+          pointer-events:none;
+          background:
+            radial-gradient(circle at 18% 16%, rgba(251,92,12,.09), transparent 34%),
+            radial-gradient(circle at 80% 74%, rgba(116,178,255,.08), transparent 36%),
+            linear-gradient(120deg, rgba(255,255,255,.02), transparent 48%);
+        }
+        .sum-soft{
+          background:linear-gradient(180deg,#10223a 0%, #0f1e34 100%);
+          border:1px solid rgba(255,255,255,.09);
+          box-shadow:0 14px 30px rgba(0,0,0,.24);
+        }
+        .sum-btn{transition:all .18s ease}
+        .sum-hero{
+          background:linear-gradient(135deg,#FF7A00 0%,#FB5C0C 100%);
+          box-shadow:0 14px 30px rgba(251,92,12,.35);
+        }
+        .sum-hero:hover{filter:brightness(1.05); transform:translateY(-1px)}
+        .sum-ghost{
+          border:1px solid rgba(216,227,251,.22);
+          background:transparent;
+          color:#D8E3FB;
+        }
+        .sum-ghost:hover{border-color:#FB5C0C; color:#FB5C0C}
+        .sum-back{
+          border:none;
+          background:transparent;
+          color:#9FB0CB;
+        }
+        .sum-back:hover{color:#D8E3FB}
+        .sum-review-scroll{scrollbar-width:thin; scrollbar-color:#2A3E5D #102038;}
+        .sum-review-scroll::-webkit-scrollbar{width:7px}
+        .sum-review-scroll::-webkit-scrollbar-thumb{background:#2A3E5D; border-radius:999px}
+      `}</style>
+      <div className="sum-shell" />
+      <div style={{ maxWidth: 1220, margin: "0 auto", display: "grid", gap: 16, position: "relative", zIndex: 1 }}>
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-          <h1 style={{ margin: 0, fontSize: 34, fontWeight: 800 }}>Summary</h1>
-          <div style={{ display: "flex", gap: 8 }}>
+          <h1 style={{ margin: 0, fontSize: 34, fontWeight: 900, color: "#fff" }}>Summary</h1>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {attemptId ? (
               <button
                 type="button"
                 onClick={isGapReady ? () => setShowGapModal(true) : handleGenerateGap}
                 disabled={gapLoading}
+                className="sum-btn sum-hero"
                 style={{
-                  height: 36,
-                  borderRadius: 8,
+                  height: 38,
+                  borderRadius: 10,
                   border: "none",
-                  background: isGapReady ? "#2F8F58" : "#FB5C0C",
                   color: "white",
-                  padding: "0 12px",
+                  padding: "0 13px",
                   cursor: gapLoading ? "not-allowed" : "pointer",
-                  fontWeight: 700,
+                  fontWeight: 800,
                   opacity: gapLoading ? 0.7 : 1,
                 }}
               >
-                {gapLoading ? "Generating GAP..." : isGapReady ? "View GAP" : "Generate GAP"}
+                {gapLoading ? "Generating GAP..." : isGapReady ? "✨ View GAP" : "✨ Generate GAP"}
               </button>
             ) : null}
             <button
               type="button"
               onClick={() => navigate("/subjects", { replace: true })}
-              style={{ height: 36, borderRadius: 8, border: "1px solid #334159", background: "#1b2738", color: "#D8E3FB", padding: "0 12px", cursor: "pointer" }}
+              className="sum-btn sum-ghost"
+              style={{ height: 38, borderRadius: 10, padding: "0 12px", cursor: "pointer", fontWeight: 700 }}
             >
               Back to Subjects
             </button>
             <button
               type="button"
               onClick={() => navigate(-1)}
-              style={{ height: 36, borderRadius: 8, border: "none", background: "#FB5C0C", color: "white", padding: "0 12px", cursor: "pointer", fontWeight: 700 }}
+              className="sum-btn sum-back"
+              style={{ height: 34, borderRadius: 8, padding: "0 8px", cursor: "pointer", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 5 }}
             >
-              Back
+              <span>←</span> Back
             </button>
           </div>
         </header>
         {gapError ? <div style={{ color: "#ffb4ab", fontSize: 13 }}>{gapError}</div> : null}
 
         <section style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 12 }}>
-          <div style={{ background: "rgba(31,42,60,0.7)", borderRadius: 12, borderLeft: "4px solid #FB5C0C", padding: 18 }}>
-            <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase" }}>Final Performance</div>
+          <div className="sum-soft" style={{ borderRadius: 14, borderLeft: "4px solid #FB5C0C", padding: 18 }}>
+            <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.3, textTransform: "uppercase" }}>Final Performance</div>
             <div style={{ marginTop: 8, display: "flex", alignItems: "baseline", gap: 6 }}>
-              <span style={{ fontSize: 52, fontWeight: 900, color: "#FB5C0C", lineHeight: 1 }}>{correctCount}</span>
-              <span style={{ fontSize: 22, color: "#9AA6BF" }}>/ {total}</span>
+              <span style={{ fontSize: 64, fontWeight: 900, color: "#FB5C0C", lineHeight: 1 }}>{correctCount}</span>
+              <span style={{ fontSize: 24, color: "#8EA1C0" }}>/ {total}</span>
             </div>
-            <div style={{ marginTop: 10, height: 8, borderRadius: 999, background: "#111C2D", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${scorePct}%`, background: "#FB5C0C" }} />
+            <div style={{ marginTop: 10, height: 10, borderRadius: 999, background: "rgba(255,255,255,.08)", overflow: "hidden", boxShadow: "inset 0 1px 4px rgba(0,0,0,.35)" }}>
+              <div style={{ height: "100%", width: `${scorePct}%`, background: "linear-gradient(90deg,#ff9548,#FB5C0C)", boxShadow: "0 0 14px rgba(251,92,12,.8)" }} />
             </div>
-            <div style={{ marginTop: 6, fontSize: 12, color: "#FB5C0C", fontWeight: 700 }}>{scorePct}%</div>
+            <div style={{ marginTop: 7, fontSize: 12, color: "#FB5C0C", fontWeight: 800 }}>{scorePct}%</div>
           </div>
 
-          <div style={{ background: "#111C2D", borderRadius: 12, padding: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div className="sum-soft" style={{ borderRadius: 14, padding: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
-              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase" }}>Subject</div>
+              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase", display: "inline-flex", gap: 5, alignItems: "center" }}><span>📘</span> Subject</div>
               <div style={{ marginTop: 6, fontWeight: 700 }}>{data.subjectName || "-"}</div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase" }}>Test ID</div>
+              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase", display: "inline-flex", gap: 5, alignItems: "center" }}><span>#</span> Test ID</div>
               <div style={{ marginTop: 6, fontWeight: 700 }}>{attemptData?.quiz_set_id || data.quizSetId || "-"}</div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase" }}>Total Questions</div>
+              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase", display: "inline-flex", gap: 5, alignItems: "center" }}><span>☰</span> Total Questions</div>
               <div style={{ marginTop: 6, fontWeight: 700 }}>{attemptData?.total_questions || total} Items</div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase" }}>Duration</div>
+              <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase", display: "inline-flex", gap: 5, alignItems: "center" }}><span>⏱</span> Duration</div>
               <div style={{ marginTop: 6, fontWeight: 700 }}>{data.durationMinutes || "-"} mins</div>
             </div>
           </div>
@@ -282,10 +323,12 @@ export default function SummarizeTestPlaceholderPage() {
 
         <section style={{ display: "grid", gap: 10 }}>
           <h2 style={{ margin: 0, fontSize: 24 }}>Detailed Review</h2>
+          <div style={{ height: 1, background: "linear-gradient(90deg, rgba(255,255,255,.22), rgba(255,255,255,.02))" }} />
           {loadingAttempt ? <div style={{ opacity: 0.8 }}>Loading attempt result...</div> : null}
           {attemptError ? <div style={{ color: "#ffb4ab", fontSize: 13 }}>{attemptError}</div> : null}
 
           <div
+            className="sum-review-scroll"
             style={{
               display: "grid",
               gap: 12,
@@ -298,43 +341,60 @@ export default function SummarizeTestPlaceholderPage() {
               <div
                 key={r.id}
                 style={{
-                  background: "#111C2D",
+                  background: "linear-gradient(180deg,#10223a 0%, #0f1e34 100%)",
                   borderRadius: 12,
-                  borderLeft: `4px solid ${r.isCorrect ? "#2F8F58" : "#a94442"}`,
+                  borderLeft: `4px solid ${r.isCorrect ? "#2BEA91" : "#ff6d6d"}`,
+                  boxShadow: r.isCorrect ? "0 0 0 1px rgba(43,234,145,.25), 0 12px 26px rgba(0,0,0,.2)" : "0 0 0 1px rgba(255,109,109,.24), 0 12px 26px rgba(0,0,0,.2)",
                   padding: 16,
                   display: "grid",
                   gap: 10,
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-                  <div style={{ fontSize: 11, color: "#9AA6BF", letterSpacing: 1.2, textTransform: "uppercase" }}>Question {r.id}</div>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: r.isCorrect ? "#7BE495" : "#FFB4AB", letterSpacing: 1.1, textTransform: "uppercase" }}>
+                  <div style={{ fontSize: 10, color: "#9AA6BF", letterSpacing: 1.6, textTransform: "uppercase" }}>Question {r.id}</div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: r.isCorrect ? "#8AF0B2" : "#FFB4AB",
+                      letterSpacing: 1.1,
+                      textTransform: "uppercase",
+                      background: r.isCorrect ? "rgba(43,234,145,.2)" : "rgba(230,87,87,.22)",
+                      border: `1px solid ${r.isCorrect ? "rgba(43,234,145,.45)" : "rgba(255,120,120,.45)"}`,
+                      borderRadius: 999,
+                      padding: "3px 10px",
+                    }}
+                  >
                     {r.isCorrect ? "Correct" : "Incorrect"}
                   </div>
                 </div>
 
-                <div style={{ fontSize: 18, lineHeight: 1.45, fontWeight: 600 }}>{r.question}</div>
+                <div style={{ fontSize: 18, lineHeight: 1.45, fontWeight: 700, color: "#fff" }}>{r.question}</div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                  <div style={{ background: "#081425", borderRadius: 8, padding: 10 }}>
+                  <div style={{ background: r.isCorrect ? "rgba(45,110,84,.14)" : "rgba(30,45,74,.6)", border: "1px solid #1E2D4A", borderRadius: 8, padding: 10 }}>
                     <div style={{ fontSize: 10, color: "#9AA6BF", letterSpacing: 1.1, textTransform: "uppercase" }}>Your Answer</div>
                     <div style={{ marginTop: 5, fontWeight: 700 }}>{choiceText(r, r.selected)}</div>
                   </div>
-                  <div style={{ background: "#081425", borderRadius: 8, padding: 10 }}>
+                  <div style={{ background: "rgba(30,45,74,.58)", border: "1px solid #1E2D4A", borderRadius: 8, padding: 10 }}>
                     <div style={{ fontSize: 10, color: "#9AA6BF", letterSpacing: 1.1, textTransform: "uppercase" }}>Correct Answer</div>
                     <div style={{ marginTop: 5, fontWeight: 700 }}>{choiceText(r, r.correct)}</div>
                   </div>
                 </div>
 
-                <div style={{ background: "#1F2A3C", borderRadius: 8, padding: 12, display: "grid", gap: 8 }}>
+                <div style={{ background: "linear-gradient(180deg, rgba(36,53,79,.75), rgba(28,44,67,.7))", borderLeft: "3px solid #8CA9D6", borderRadius: 8, padding: 12, display: "grid", gap: 8 }}>
                   {r.isCorrect ? (
                     <>
-                      <div style={{ fontSize: 10, color: "#FB5C0C", letterSpacing: 1.1, textTransform: "uppercase" }}>Explanation</div>
+                      <div style={{ fontSize: 10, color: "#FB5C0C", letterSpacing: 1.3, textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                        <span>💡</span> Explanation
+                      </div>
                       <div style={{ fontSize: 13, lineHeight: 1.5 }}>{explanationText(r, r.correct)}</div>
                     </>
                   ) : (
                     <>
-                      <div style={{ fontSize: 10, color: "#FB5C0C", letterSpacing: 1.1, textTransform: "uppercase" }}>Explanation</div>
+                      <div style={{ fontSize: 10, color: "#FB5C0C", letterSpacing: 1.3, textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                        <span>💡</span> Explanation
+                      </div>
                       <div style={{ fontSize: 13, lineHeight: 1.5 }}>
                         <strong>Correct choice:</strong> {explanationText(r, r.correct)}
                       </div>

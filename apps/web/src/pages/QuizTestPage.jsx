@@ -39,6 +39,7 @@ export default function QuizTestPage() {
   const chapterName = location.state?.chapterName || "Chapter";
 
   const [questions, setQuestions] = useState(() => buildMockQuestions(quizSet.questionCount, chapterName));
+  const [profile, setProfile] = useState(null);
   const [quizTitle, setQuizTitle] = useState(quizSet.title);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [questionError, setQuestionError] = useState("");
@@ -61,6 +62,13 @@ export default function QuizTestPage() {
       setLoadingQuestions(true);
       setQuestionError("");
       try {
+        const meResponse = await apiRequest("/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (meResponse.ok) {
+          setProfile(await meResponse.json());
+        }
+
         const response = await apiRequest(`/core/exam/set/${quizSetId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -116,6 +124,18 @@ export default function QuizTestPage() {
 
     loadQuizSet();
   }, [quizSetId, navigate, quizSet.questionCount, quizSet.title, chapterName]);
+
+  const handleLogout = async () => {
+    const token = getAccessToken();
+    if (token) {
+      await apiRequest("/auth/logout", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => undefined);
+    }
+    clearAccessToken();
+    navigate("/login", { replace: true });
+  };
 
   useEffect(() => {
     if (timeUp) return;
@@ -216,22 +236,52 @@ export default function QuizTestPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#081425", color: "#D8E3FB", fontFamily: "Inter, sans-serif" }}>
-      <header style={{ height: 64, background: "#111C2D", borderBottom: "1px solid #2A3548", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px" }}>
-        <div style={{ display: "grid", gap: 2 }}>
-          <div style={{ fontWeight: 800, color: "#FB5C0C" }}>E-Pretest</div>
-          <div style={{ fontSize: 12, opacity: 0.75 }}>{subjectName} ({subjectCode})</div>
+      <header style={{ height: 66, background: "rgba(13, 28, 46, 0.9)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(255, 255, 255, 0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", position: "sticky", top: 0, zIndex: 5 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            style={{
+              borderRadius: 8,
+              padding: "6px 12px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              color: "#a3b1cc",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.05)",
+            }}
+          >
+            <span style={{ fontSize: 10 }}>◀</span> Back
+          </button>
+          <div style={{ width: 1, height: 20, background: "rgba(255, 255, 255, 0.1)" }} />
+          <div style={{ fontWeight: 900, color: "rgb(251, 92, 12)", letterSpacing: -0.5, fontSize: 20 }}>E-Pretest</div>
+          <span style={{ opacity: 0.4, fontSize: 14 }}>/</span>
+          <span style={{ opacity: 0.85, fontSize: 14, fontWeight: 500, color: "#D8E3FB" }}>Quiz Session</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 11, letterSpacing: 1, color: "#9AA6BF" }}>TIME REMAINING</div>
             <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "monospace", color: timeUp ? "#ffb4ab" : "#D8E3FB" }}>{formatTime(timeLeft)}</div>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            style={{ height: 36, borderRadius: 8, border: "1px solid #334159", background: "#1b2738", color: "#D8E3FB", padding: "0 10px", cursor: "pointer" }}
-          >
-            Back
+          <div style={{ width: 1, height: 24, background: "rgba(255, 255, 255, 0.1)" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, rgb(42, 64, 95), rgb(31, 51, 79))", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 13, color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "inset 0 2px 4px rgba(255,255,255,0.1)" }}>
+              {String(profile?.full_name || "U").trim().charAt(0).toUpperCase()}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#D8E3FB", lineHeight: 1.2 }}>{profile?.full_name || "Unknown User"}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "rgb(251, 92, 12)", textTransform: "uppercase", letterSpacing: 0.5, opacity: 0.9 }}>
+                {profile?.role || "Student"}
+              </span>
+            </div>
+          </div>
+          <div style={{ width: 1, height: 24, background: "rgba(255, 255, 255, 0.1)" }} />
+          <button type="button" onClick={handleLogout} style={{ borderRadius: 8, padding: "6px 12px", cursor: "pointer", color: "#ff8b8b", background: "transparent", border: "1px solid rgba(255, 139, 139, 0.2)", fontSize: 13 }}>
+            Logout
           </button>
         </div>
       </header>

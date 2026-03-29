@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../lib_api";
 import { clearAccessToken, getAccessToken } from "../lib_auth";
@@ -8,6 +8,14 @@ function formatDate(date) {
 }
 
 const SUBJECT_ID_REGEX = /^\d{9}$/;
+
+function fileTypeMeta(path = "") {
+  const p = String(path).toLowerCase();
+  if (p.endsWith(".pdf")) return { tag: "PDF", color: "#FB5C0C" };
+  if (p.endsWith(".mp4") || p.endsWith(".mov") || p.endsWith(".mkv")) return { tag: "VIDEO", color: "#3b82f6" };
+  if (p.endsWith(".png") || p.endsWith(".jpg") || p.endsWith(".jpeg") || p.endsWith(".gif")) return { tag: "IMAGE", color: "#16a34a" };
+  return { tag: "FILE", color: "#7B879C" };
+}
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
@@ -26,6 +34,8 @@ export default function AdminDashboardPage() {
 
   const [chapterName, setChapterName] = useState("");
   const [chapterFile, setChapterFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const [dragActive, setDragActive] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [extractingNow, setExtractingNow] = useState(false);
   const [uploadPopup, setUploadPopup] = useState({ show: false, type: "success", title: "", message: "" });
@@ -333,9 +343,36 @@ export default function AdminDashboardPage() {
     await loadChapters(selectedSubject.subjectId, token);
   };
 
+  const handleDropFile = (event) => {
+    event.preventDefault();
+    setDragActive(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    setChapterFile(file);
+    setUploadMessage("");
+  };
+
   return (
-    <div style={{ minHeight: "100vh", background: "#081425", color: "#D8E3FB", fontFamily: "Inter, sans-serif" }}>
-      <style>{`@keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Inter, sans-serif" }}>
+      <style>{`
+        @keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .adm-btn{transition:all .2s ease}
+        .adm-card{transition:all .2s ease}
+        .adm-subject-card{background:linear-gradient(180deg,#13243d 0%,#102039 100%); border:1px solid rgba(255,255,255,.08)}
+        .adm-subject-card:hover{transform:translateY(-1px); border-color:rgba(198,214,241,.3); background:linear-gradient(180deg,#1a2f4c 0%,#18304b 100%)}
+        .adm-subject-card.active{border-left:4px solid #FB5C0C; box-shadow:0 0 0 1px rgba(251,92,12,.35),0 12px 30px rgba(0,0,0,.22)}
+        .adm-accent-btn{box-shadow:0 10px 24px rgba(251,92,12,.28)}
+        .adm-accent-btn:hover{background:#ff6f2c !important; transform:translateY(-1px)}
+        .adm-danger-btn:hover{background:#cf4a4a !important}
+        .adm-soft-card{background:linear-gradient(180deg,#14263f 0%,#112238 100%); border:1px solid rgba(255,255,255,.08)}
+        .adm-soft-card:hover{border-color:rgba(255,255,255,.16)}
+        .adm-upload-zone{border:1.5px dashed rgba(216,227,251,.35); background:linear-gradient(180deg,#12233a 0%,#102038 100%); transition:all .2s ease}
+        .adm-upload-zone:hover{border-color:#FB5C0C; background:linear-gradient(180deg,#152942 0%,#132740 100%)}
+        .adm-upload-zone.active{border-color:#FB5C0C; box-shadow:0 0 0 3px rgba(251,92,12,.2)}
+        .adm-chapter-row{transition:all .18s ease}
+        .adm-chapter-row:hover{background:#1a2f4a !important; border-color:rgba(255,255,255,.16) !important}
+        .adm-mini-del:hover{background:#cf4a4a !important}
+      `}</style>
       <header
         style={{
           height: 64,
@@ -401,6 +438,7 @@ export default function AdminDashboardPage() {
               cursor: isAdmin ? "pointer" : "not-allowed",
               opacity: isAdmin ? 1 : 0.65,
             }}
+            className="adm-btn adm-accent-btn"
           >
             Add New Subject
           </button>
@@ -419,13 +457,13 @@ export default function AdminDashboardPage() {
                   key={subject.subjectId}
                   type="button"
                   onClick={() => setSelectedSubjectId(subject.subjectId)}
+                  className={`adm-card adm-subject-card ${active ? "active" : ""}`}
                   style={{
                     textAlign: "left",
-                    border: active ? "1px solid #FB5C0C" : "1px solid rgba(255,255,255,0.08)",
                     borderLeft: active ? "4px solid #FB5C0C" : "4px solid transparent",
                     borderRadius: 12,
-                    background: active ? "#2A3548" : "#111C2D",
-                    color: "#D8E3FB",
+                    background: active ? "linear-gradient(180deg,#1a2f4c 0%,#18304b 100%)" : undefined,
+                    color: active ? "#ffffff" : "#D8E3FB",
                     padding: "12px 12px 12px 14px",
                     cursor: "pointer",
                   }}
@@ -444,10 +482,10 @@ export default function AdminDashboardPage() {
             background: "#111C2D",
             borderRadius: 16,
             border: "1px solid rgba(255,255,255,0.08)",
-            padding: 18,
+            padding: 14,
             display: "flex",
             flexDirection: "column",
-            gap: 16,
+            gap: 12,
             overflow: "hidden",
             minHeight: 0,
           }}
@@ -458,6 +496,7 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 onClick={handleDeleteSubject}
+                className="adm-btn adm-danger-btn"
                 style={{
                   height: 34,
                   border: "none",
@@ -478,26 +517,26 @@ export default function AdminDashboardPage() {
             <div style={{ opacity: 0.75 }}>Select subject from left panel</div>
           ) : (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: isNarrowScreen ? "1fr" : "1fr 1fr", gap: 10 }}>
-                <div style={{ background: "#1b2738", borderRadius: 10, padding: 12 }}>
-                  <div style={{ fontSize: 11, opacity: 0.65 }}>Subject Name</div>
+              <div style={{ display: "grid", gridTemplateColumns: isNarrowScreen ? "1fr" : "1fr 1fr", gap: 8 }}>
+                <div className="adm-card adm-soft-card" style={{ borderRadius: 10, padding: 10 }}>
+                  <div style={{ fontSize: 11, opacity: 0.72 }}>BOOK • Subject Name</div>
                   <div style={{ marginTop: 6, fontWeight: 700 }}>{selectedSubject.name}</div>
                 </div>
-                <div style={{ background: "#1b2738", borderRadius: 10, padding: 12 }}>
-                  <div style={{ fontSize: 11, opacity: 0.65 }}>Subject ID</div>
+                <div className="adm-card adm-soft-card" style={{ borderRadius: 10, padding: 10 }}>
+                  <div style={{ fontSize: 11, opacity: 0.72 }}>ID • Subject ID</div>
                   <div style={{ marginTop: 6, fontWeight: 700 }}>{selectedSubject.subjectId}</div>
                 </div>
-                <div style={{ background: "#1b2738", borderRadius: 10, padding: 12 }}>
-                  <div style={{ fontSize: 11, opacity: 0.65 }}>Created By (Auto)</div>
+                <div className="adm-card adm-soft-card" style={{ borderRadius: 10, padding: 10 }}>
+                  <div style={{ fontSize: 11, opacity: 0.72 }}>USER • Created By</div>
                   <div style={{ marginTop: 6, fontWeight: 700 }}>{selectedSubject.createdBy}</div>
                 </div>
-                <div style={{ background: "#1b2738", borderRadius: 10, padding: 12 }}>
-                  <div style={{ fontSize: 11, opacity: 0.65 }}>Created At (Auto)</div>
+                <div className="adm-card adm-soft-card" style={{ borderRadius: 10, padding: 10 }}>
+                  <div style={{ fontSize: 11, opacity: 0.72 }}>TIME • Created At</div>
                   <div style={{ marginTop: 6, fontWeight: 700 }}>{formatDate(selectedSubject.createdAt)}</div>
                 </div>
               </div>
 
-              <form onSubmit={handleUploadSlide} style={{ background: "#0f1b2d", borderRadius: 12, padding: 14, display: "grid", gap: 10 }}>
+              <form onSubmit={handleUploadSlide} style={{ background: "#0f1b2d", borderRadius: 12, padding: 12, display: "grid", gap: 8 }}>
                 <h3 style={{ margin: 0 }}>Upload Slide (PDF)</h3>
               <input
                 type="text"
@@ -511,15 +550,49 @@ export default function AdminDashboardPage() {
                 style={{ height: 40, borderRadius: 8, border: "1px solid #334159", background: "#111C2D", color: "#D8E3FB", padding: "0 10px" }}
               />
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="application/pdf,.pdf"
                 onChange={(e) => {
                   setChapterFile(e.target.files?.[0] || null);
                   setUploadMessage("");
                 }}
-                required
-                style={{ color: "#D8E3FB" }}
+                style={{ display: "none" }}
               />
+              <div
+                role="button"
+                tabIndex={0}
+                className={`adm-upload-zone ${dragActive ? "active" : ""}`}
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragActive(true);
+                }}
+                onDragLeave={() => setDragActive(false)}
+                onDrop={handleDropFile}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
+                style={{
+                  minHeight: 40,
+                  borderRadius: 12,
+                  display: "grid",
+                  placeItems: "center",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  padding: "0 12px",
+                }}
+              >
+                <div style={{ display: "grid", gap: 1, justifyItems: "center", width: "100%" }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>
+                    {chapterFile ? chapterFile.name : "Drag and Drop"}
+                  </div>
+                  <div style={{ fontSize: 10, opacity: 0.72 }}>{chapterFile ? "PDF selected" : "or click to upload PDF"}</div>
+                </div>
+              </div>
               <button
                 type="submit"
                 disabled={uploadSlideDisabled}
@@ -563,7 +636,7 @@ export default function AdminDashboardPage() {
                   padding: 14,
                   display: "flex",
                   flexDirection: "column",
-                  gap: 10,
+                  gap: 8,
                   flex: 1,
                   minHeight: 220,
                   overflow: "hidden",
@@ -574,31 +647,43 @@ export default function AdminDashboardPage() {
                   <div style={{ opacity: 0.75, fontSize: 14 }}>No chapter uploaded yet</div>
                 ) : (
                   <div style={{ display: "grid", gap: 10, overflowY: "auto", paddingRight: 4 }}>
-                    {selectedSubjectChapters.map((chapter) => (
-                      <div key={chapter.id} style={{ background: "#111C2D", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 10 }}>
-                        <div style={{ fontWeight: 700 }}>{chapter.chapterName}</div>
-                        <div style={{ fontSize: 13, opacity: 0.85, marginTop: 3 }}>{chapter.filePath}</div>
-                        <div style={{ fontSize: 11, opacity: 0.6, marginTop: 3 }}>Uploaded: {formatDate(chapter.uploadedAt)}</div>
-                        <div style={{ marginTop: 8 }}>
+                    {selectedSubjectChapters.map((chapter) => {
+                      const meta = fileTypeMeta(chapter.filePath);
+                      return (
+                        <div key={chapter.id} className="adm-chapter-row" style={{ background: "#111C2D", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 12, display: "flex", alignItems: "center", gap: 12 }}>
+                          <div style={{ minWidth: 56, textAlign: "center" }}>
+                            <div style={{ fontSize: 11, fontWeight: 800, color: meta.color }}>{meta.tag}</div>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontWeight: 700 }}>{chapter.chapterName}</div>
+                            <div style={{ fontSize: 12, opacity: 0.74, marginTop: 3 }}>Uploaded By: {chapter.uploadedByUserId} • {formatDate(chapter.uploadedAt)}</div>
+                            <div style={{ fontSize: 12, opacity: 0.62, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapter.filePath}</div>
+                          </div>
                           <button
                             type="button"
                             onClick={() => handleDeleteChapter(chapter.id)}
+                            className="adm-btn adm-mini-del"
                             style={{
-                              height: 32,
+                              width: 34,
+                              height: 34,
                               border: "none",
                               borderRadius: 8,
-                              padding: "0 10px",
                               background: "#aa3b3b",
                               color: "white",
-                              fontWeight: 700,
                               cursor: "pointer",
+                              display: "grid",
+                              placeItems: "center",
                             }}
+                            aria-label="Delete chapter"
+                            title="Delete chapter"
                           >
-                            Delete Chapter
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                              <path d="M4 7h16M9 7V5h6v2m-8 0 1 12h8l1-12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
                           </button>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

@@ -356,34 +356,135 @@ export default function ChapterExamEntryPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#081425", color: "#D8E3FB", fontFamily: "Inter, sans-serif" }}>
-      <style>{`@keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
-      <header style={{ height: 64, background: "#111C2D", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ fontWeight: 800, color: "#FB5C0C", letterSpacing: -0.5 }}>E-Pretest</div>
-          <span style={{ opacity: 0.7 }}>Subject Detail</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontSize: 13, opacity: 0.85 }}>{profile ? `${profile.full_name} (${profile.role})` : "-"}</span>
-          <button type="button" onClick={() => navigate("/subjects", { replace: true })} style={{ border: "none", borderRadius: 8, padding: "8px 10px", background: "#2A3548", color: "#D8E3FB", cursor: "pointer" }}>
-            Back
+    <div style={{ minHeight: "100vh", background: "#0A192F", color: "#D8E3FB", fontFamily: "Inter, sans-serif", position: "relative" }}>
+      <style>{`
+        @keyframes ept-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .entry-shell::before{
+          content:"";
+          position:fixed;
+          inset:0;
+          pointer-events:none;
+          background:
+            radial-gradient(circle at 16% 18%, rgba(251,92,12,.08), transparent 34%),
+            radial-gradient(circle at 74% 68%, rgba(116,178,255,.08), transparent 36%),
+            linear-gradient(120deg, rgba(255,255,255,.025), transparent 50%);
+        }
+        .entry-soft{
+          background:linear-gradient(180deg,#10223a 0%, #0f1e34 100%);
+          border:1px solid rgba(255,255,255,.08);
+          box-shadow:0 14px 28px rgba(0,0,0,.24);
+          border-radius:14px;
+        }
+        .entry-btn{transition:all .18s ease}
+        .entry-ghost{
+          background:transparent;
+          border:1px solid rgba(216,227,251,.2);
+          color:#d8e3fb;
+        }
+        .entry-ghost:hover{
+          border-color:#FB5C0C;
+          color:#FB5C0C;
+        }
+        .entry-generate{
+          background:linear-gradient(135deg,#FF7A00 0%, #FB5C0C 100%);
+          box-shadow:0 14px 30px rgba(251,92,12,.35);
+        }
+        .entry-generate:hover{filter:brightness(1.05); transform:translateY(-1px)}
+        .entry-toc-scroll{scrollbar-width:thin; scrollbar-color:#2A3E5D #102038;}
+        .entry-toc-scroll::-webkit-scrollbar{width:7px}
+        .entry-toc-scroll::-webkit-scrollbar-thumb{background:#2A3E5D;border-radius:999px}
+        .entry-toc-row{
+          transition:all .15s ease;
+          background:rgba(16,31,52,.8);
+          border:1px solid rgba(255,255,255,.08);
+        }
+        .entry-toc-row:hover{background:rgba(23,41,67,.9); border-color:rgba(255,255,255,.18)}
+        .entry-set-card{
+          background:linear-gradient(180deg,#12243d 0%, #102037 100%);
+          border:1px solid rgba(255,255,255,.08);
+          transition:all .18s ease;
+        }
+        .entry-set-card:hover{border-color:rgba(255,255,255,.16); transform:translateY(-1px)}
+        .entry-pill{
+          border-radius:999px;
+          padding:3px 10px;
+          font-size:11px;
+          font-weight:800;
+          letter-spacing:.3px;
+        }
+      `}</style>
+      <div className="entry-shell" />
+      <header style={{ height: 66, background: "rgba(13, 28, 46, 0.9)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(255, 255, 255, 0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", position: "sticky", top: 0, zIndex: 5 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button
+            type="button"
+            className="entry-btn entry-ghost"
+            onClick={() => navigate("/subjects", { replace: true })}
+            style={{
+              borderRadius: 8,
+              padding: "6px 12px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              color: "#a3b1cc",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.05)",
+            }}
+          >
+            <span style={{ fontSize: 10 }}>◀</span> Back
           </button>
-          <button type="button" onClick={handleLogout} style={{ border: "none", borderRadius: 8, padding: "8px 10px", background: "#2A3548", color: "#D8E3FB", cursor: "pointer" }}>
+
+          <div style={{ width: 1, height: 20, background: "rgba(255, 255, 255, 0.1)" }} />
+          <div style={{ fontWeight: 900, color: "rgb(251, 92, 12)", letterSpacing: -0.5, fontSize: 20 }}>E-Pretest</div>
+          <span style={{ opacity: 0.4, fontSize: 14 }}>/</span>
+          <span style={{ opacity: 0.85, fontSize: 14, fontWeight: 500, color: "#D8E3FB" }}>Subject Detail</span>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, rgb(42, 64, 95), rgb(31, 51, 79))", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 13, color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "inset 0 2px 4px rgba(255,255,255,0.1)" }}>
+            {String(profile?.full_name || "U").trim().charAt(0).toUpperCase()}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#D8E3FB", lineHeight: 1.2 }}>{profile?.full_name || "Unknown User"}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "rgb(251, 92, 12)", textTransform: "uppercase", letterSpacing: 0.5, opacity: 0.9 }}>
+                {profile?.role || "Student"}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ width: 1, height: 24, background: "rgba(255, 255, 255, 0.1)" }} />
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="entry-btn entry-ghost"
+            style={{
+              borderRadius: 8,
+              padding: "6px 12px",
+              cursor: "pointer",
+              color: "#ff8b8b",
+              background: "transparent",
+              border: "1px solid rgba(255, 139, 139, 0.2)",
+              fontSize: 13,
+            }}
+          >
             Logout
           </button>
         </div>
       </header>
 
-      <main style={{ maxWidth: 1440, margin: "0 auto", padding: 24, display: "grid", gridTemplateColumns: typeof window !== "undefined" && window.innerWidth < 980 ? "1fr" : "2fr 1fr", gap: 20 }}>
-        <section style={{ display: "grid", gap: 16 }}>
-          <div style={{ background: "#111C2D", borderRadius: 14, padding: 20, border: "1px solid rgba(255,255,255,0.08)" }}>
-            <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: 1, color: "#FB5C0C" }}>Subject Identifier</div>
-            <h1 style={{ margin: "6px 0 0", fontSize: 34 }}>{headerTitle}</h1>
-            <div style={{ opacity: 0.7, marginTop: 4 }}>{subject?.subject_id || "Unknown Subject ID"}</div>
+      <main style={{ maxWidth: 1460, margin: "0 auto", padding: 22, display: "grid", gridTemplateColumns: typeof window !== "undefined" && window.innerWidth < 980 ? "1fr" : "2fr 1fr", gap: 18, position: "relative", zIndex: 1 }}>
+        <section style={{ display: "grid", gap: 14 }}>
+          <div className="entry-soft" style={{ padding: 20, borderLeft: "3px solid #FB5C0C" }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1.3, color: "#9FB0CB" }}>Subject Identifier</div>
+            <h1 style={{ margin: "8px 0 0", fontSize: 34, fontWeight: 900 }}>{headerTitle}</h1>
+            <div style={{ opacity: 0.7, marginTop: 4, fontSize: 13 }}>{subject?.subject_id || "Unknown Subject ID"}</div>
             <div style={{ marginTop: 10, opacity: 0.75 }}>Selected Chapter: {chapter?.chapter_name || `Chapter ${chapterId}`}</div>
           </div>
 
-          <div style={{ background: "#111C2D", borderRadius: 14, padding: 20, border: "1px solid rgba(255,255,255,0.08)", minHeight: 420, display: "flex", flexDirection: "column" }}>
+          <div className="entry-soft" style={{ padding: 18, minHeight: 420, display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <h2 style={{ margin: 0, fontSize: 20 }}>Table Of Contents</h2>
               <span style={{ fontSize: 12, opacity: 0.65 }}>{tocItems.length} Topics</span>
@@ -395,17 +496,18 @@ export default function ChapterExamEntryPage() {
               <div style={{ opacity: 0.7 }}>No TOC found yet</div>
             ) : (
               <div
+                className="entry-toc-scroll"
                 style={{
                   display: "grid",
-                  gap: 10,
+                  gap: 8,
                   maxHeight: 360,
                   overflowY: "auto",
                   paddingRight: 4,
                 }}
               >
                 {tocItems.map((topic, idx) => (
-                  <button key={`${topic}_${idx}`} type="button" style={{ textAlign: "left", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, background: "#0f1b2d", color: "#D8E3FB", padding: "12px 14px", cursor: "default" }}>
-                    <span style={{ color: "#FB5C0C", marginRight: 8 }}>{String(idx + 1).padStart(2, "0")}</span>
+                  <button key={`${topic}_${idx}`} type="button" className="entry-toc-row" style={{ textAlign: "left", borderRadius: 10, color: "#D8E3FB", padding: "11px 12px", cursor: "default", display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(251,92,12,.14)", color: "#FB5C0C", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 11 }}>{String(idx + 1).padStart(2, "0")}</span>
                     {topic}
                   </button>
                 ))}
@@ -417,17 +519,18 @@ export default function ChapterExamEntryPage() {
           </div>
         </section>
 
-        <aside style={{ display: "grid", gap: 14, alignContent: "start" }}>
+        <aside style={{ display: "grid", gap: 12, alignContent: "start" }}>
           <button
             type="button"
             onClick={handleGenerateExam}
             disabled={generating || hasPendingSet}
+            className="entry-btn entry-generate"
             style={{
               width: "100%",
               border: "none",
-              borderRadius: 12,
-              height: 56,
-              background: generating || hasPendingSet ? "#7f8da8" : "#FB5C0C",
+              borderRadius: 14,
+              height: 58,
+              background: generating || hasPendingSet ? "#7f8da8" : undefined,
               color: "white",
               fontWeight: 800,
               cursor: generating || hasPendingSet ? "not-allowed" : "pointer",
@@ -457,7 +560,10 @@ export default function ChapterExamEntryPage() {
             ) : hasPendingSet ? (
               "Finish existing exam set before generating new one"
             ) : (
-              "Generate Exam"
+              <>
+                <span style={{ fontSize: 15 }}>⚡</span>
+                Generate Exam
+              </>
             )}
             {generating ? (
               <span
@@ -474,7 +580,7 @@ export default function ChapterExamEntryPage() {
             ) : null}
           </button>
 
-          <div style={{ background: "#111C2D", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", padding: 14, minHeight: 360, display: "grid", gap: 10 }}>
+          <div className="entry-soft" style={{ padding: 14, minHeight: 360, display: "grid", gap: 10 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <h3 style={{ margin: 0, fontSize: 18 }}>Exam Sets</h3>
               <span style={{ fontSize: 12, opacity: 0.65 }}>{examSets.length} Sets</span>
@@ -488,23 +594,32 @@ export default function ChapterExamEntryPage() {
                   const summary = attemptSummaryMap[String(set.id)];
                   const finished = Boolean(summary);
                   const newSet = !finished && isSetNew(set.id);
+                  const accuracy = finished ? Number(summary.accuracy || 0) : 0;
+                  const pillBg = accuracy >= 60 ? "rgba(47,143,88,.2)" : "rgba(123,135,157,.22)";
+                  const pillColor = accuracy >= 60 ? "#85E1A3" : "#C7D0DF";
                   return (
-                  <div key={set.id} style={{ background: "#0f1b2d", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: 12, display: "grid", gap: 8 }}>
-                    <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.35 }}>{set.title}</div>
-                    <div style={{ fontSize: 12, opacity: 0.75 }}>{set.questionCount} Questions</div>
-                    <div style={{ fontSize: 11, opacity: 0.8 }}>
-                      {finished ? `Finish • Accuracy ${summary.accuracy}%` : newSet ? "New exam set" : "In progress"}
+                  <div key={set.id} className="entry-set-card" style={{ borderRadius: 12, padding: 12, display: "grid", gap: 8 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "start" }}>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: 15, lineHeight: 1.35 }}>{set.title}</div>
+                        <div style={{ fontSize: 11, opacity: 0.62, marginTop: 4 }}>Set ID: {set.id}</div>
+                      </div>
+                      <span className="entry-pill" style={{ background: pillBg, color: pillColor }}>
+                        Accuracy {accuracy}%
+                      </span>
                     </div>
+                    <div style={{ fontSize: 12, opacity: 0.75 }}>{set.questionCount} Questions • {finished ? "Finished" : newSet ? "New exam set" : "In progress"}</div>
                     <button
                       type="button"
                       onClick={() => openStartModal(set)}
+                      className="entry-btn"
                       style={{
-                        height: 36,
-                        border: "none",
+                        height: 34,
+                        border: finished ? "1px solid rgba(216,227,251,.25)" : "none",
                         borderRadius: 8,
-                        background: finished ? "#2A3548" : newSet ? "#2F8F58" : "#2A3548",
+                        background: finished ? "transparent" : newSet ? "#2F8F58" : "#2A3548",
                         color: "#D8E3FB",
-                        fontWeight: 700,
+                        fontWeight: 800,
                         cursor: "pointer",
                       }}
                     >
@@ -517,7 +632,7 @@ export default function ChapterExamEntryPage() {
             {examError ? <div style={{ marginTop: 10, fontSize: 12, color: "#ffb4ab" }}>{examError}</div> : null}
           </div>
 
-          <div style={{ background: "#111C2D", borderRadius: 14, border: "1px solid rgba(255,255,255,0.08)", padding: 14, display: "grid", gap: 10 }}>
+          <div className="entry-soft" style={{ padding: 14, display: "grid", gap: 10, position: "relative", minHeight: 176 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h3 style={{ margin: 0, fontSize: 18 }}>Mastery Profile</h3>
               <span style={{ fontSize: 12, opacity: 0.7 }}>Chapter Level</span>
@@ -525,27 +640,28 @@ export default function ChapterExamEntryPage() {
             {masteryLoading ? (
               <div style={{ fontSize: 13, opacity: 0.75 }}>Loading mastery...</div>
             ) : (
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                <span style={{ fontSize: 34, fontWeight: 900, color: masteryColor(masteryData?.mastery_level) }}>{masteryPercent}%</span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: -2 }}>
+                <span style={{ fontSize: 52, lineHeight: 1, fontWeight: 900, color: masteryColor(masteryData?.mastery_level) }}>{masteryPercent}%</span>
                 <span
                   style={{
                     fontSize: 13,
-                    color: "#D8E3FB",
-                    background: "rgba(255,255,255,0.08)",
-                    border: "1px solid rgba(255,255,255,0.12)",
+                    color: masteryColor(masteryData?.mastery_level),
+                    background: `${masteryColor(masteryData?.mastery_level)}22`,
+                    border: `1px solid ${masteryColor(masteryData?.mastery_level)}55`,
                     borderRadius: 999,
                     padding: "3px 10px",
+                    fontWeight: 800,
                   }}
                 >
                   {masteryLevel}
                 </span>
               </div>
             )}
-            <div style={{ height: 8, borderRadius: 999, background: "#0f1b2d", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${masteryPercent}%`, background: masteryColor(masteryData?.mastery_level) }} />
+            <div style={{ height: 10, borderRadius: 999, background: "rgba(255,255,255,.08)", overflow: "hidden", boxShadow: "inset 0 1px 4px rgba(0,0,0,.35)" }}>
+              <div style={{ height: "100%", width: `${masteryPercent}%`, background: `linear-gradient(90deg, ${masteryColor(masteryData?.mastery_level)}bb 0%, ${masteryColor(masteryData?.mastery_level)} 100%)`, boxShadow: `0 0 16px ${masteryColor(masteryData?.mastery_level)}99` }} />
             </div>
             {masteryData ? (
-              <div style={{ fontSize: 11, opacity: 0.72 }}>
+              <div style={{ fontSize: 10, opacity: 0.56, position: "absolute", bottom: 12, right: 14 }}>
                 Attempts: {masteryData.attempt_count} | alpha: {masteryData.alpha.toFixed(2)} beta: {masteryData.beta.toFixed(2)}
               </div>
             ) : null}
