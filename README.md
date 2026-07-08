@@ -6,7 +6,7 @@ The platform allows administrators to upload PDF documents, which are then autom
 
 ---
 
-## 🌟 Features
+## Features
 
 - **KMUTNB Google OAuth** — Secure authentication restricted exclusively to KMUTNB accounts (`@email.kmutnb.ac.th`).
 - **Admin Management** — Effortlessly upload PDFs and manage subjects, chapters, and lesson materials.
@@ -17,7 +17,7 @@ The platform allows administrators to upload PDF documents, which are then autom
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -31,7 +31,7 @@ The platform allows administrators to upload PDF documents, which are then autom
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 E-Pretest/
