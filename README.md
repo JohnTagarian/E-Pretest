@@ -31,6 +31,27 @@ The platform allows administrators to upload PDF documents, which are then autom
 
 ---
 
+## Environment Variables
+
+Create a local environment file before running the backend:
+
+```bash
+cp infra/env/.env.example infra/env/.env
+```
+
+Then fill in the real secrets in `infra/env/.env`, especially:
+
+```env
+DEEPSEEK_API_KEY=your_deepseek_api_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+OAUTH_STATE_SECRET=your_random_state_secret
+```
+
+`infra/env/.env` is ignored by git. Keep real API keys out of source code and only commit `infra/env/.env.example`.
+
+---
+
 ## Project Structure
 
 ```text

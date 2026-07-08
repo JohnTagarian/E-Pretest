@@ -1,4 +1,5 @@
 import shutil
+import re
 from pathlib import Path
 from uuid import uuid4
 
@@ -35,6 +36,7 @@ router = APIRouter(
 
 @router.get("/me")
 def get_admin_me(current_user: UserPublic = Depends(get_admin_user)) -> dict:
+    """Return basic info for the current admin."""
     return {
         "message": "admin access granted",
         "user_id": current_user.user_id,
@@ -44,17 +46,36 @@ def get_admin_me(current_user: UserPublic = Depends(get_admin_user)) -> dict:
 
 
 logger = logging.getLogger(__name__)
+_SUBJECT_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
+
+
+def _validate_subject_id(subject_id: str) -> str:
+    """Keep public subject IDs simple and path-safe."""
+    value = subject_id.strip()
+    if not _SUBJECT_ID_RE.fullmatch(value):
+        raise HTTPException(
+            status_code=400,
+            detail="subject_id must be 1-32 characters using letters, numbers, underscore, or hyphen",
+        )
+    return value
+
+
+def _subject_upload_dir(subject_db_id: int) -> Path:
+    """Build the local upload folder from the internal subject ID."""
+    return Path("data/uploads") / str(subject_db_id)
 
 @router.post("/subjects", response_model=SubjectResponse)
 def create_subject_api(
     payload: CreateSubjectRequest,
     current_user: UserPublic = Depends(get_admin_user),
 ) -> SubjectResponse:
-    if not payload.subject_id.strip() or not payload.name.strip():
+    """Create a subject owned by the current admin."""
+    if not payload.name.strip():
         raise HTTPException(status_code=400, detail="subject_id and name are required")
+    subject_id = _validate_subject_id(payload.subject_id)
     try:
         db_subject = create_subject(
-            subject_id=payload.subject_id.strip(),
+            subject_id=subject_id,
             name=payload.name.strip(),
             created_by_user_id=int(current_user.user_id),
         )
@@ -71,6 +92,7 @@ def create_subject_api(
 def list_subjects_api(
     _: UserPublic = Depends(get_current_user),
 ) -> list[SubjectResponse]:
+    """List subjects visible to signed-in users."""
     rows = list_subjects()
     return [
         SubjectResponse(
@@ -89,6 +111,7 @@ async def upload_chapter_api(
     file: UploadFile = File(...),
     current_user: UserPublic = Depends(get_admin_user),
 ) -> ChapterResponse:
+    """Upload a chapter PDF and try to prepare its TOC."""
     subject = get_subject_by_subject_id(subject_id)
     if not subject:
         raise HTTPException(status_code=404, detail="Subject not found")
@@ -96,7 +119,7 @@ async def upload_chapter_api(
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF is allowed")
 
-    upload_dir = Path("data/uploads") / subject_id
+    upload_dir = _subject_upload_dir(subject.id)
     upload_dir.mkdir(parents=True, exist_ok=True)
 
     safe_name = f"{uuid4().hex}.pdf"
@@ -142,6 +165,7 @@ def list_chapters_api(
     subject_id: str,
     _: UserPublic = Depends(get_current_user),
 ) -> list[ChapterResponse]:
+    """List chapters under one subject."""
     subject = get_subject_by_subject_id(subject_id)
     if not subject:
         raise HTTPException(status_code=404, detail="Subject not found")
@@ -164,6 +188,7 @@ def delete_subject_api(
     subject_id: str,
     _: UserPublic = Depends(get_admin_user),
 ) -> ActionResponse:
+    """Delete a subject and its local generated files."""
     subject = get_subject_by_subject_id(subject_id)
     if not subject:
         raise HTTPException(status_code=404, detail="Subject not found")
@@ -172,7 +197,7 @@ def delete_subject_api(
     if not deleted:
         raise HTTPException(status_code=404, detail="Subject not found")
 
-    shutil.rmtree(Path("data/uploads") / subject_id, ignore_errors=True)
+    shutil.rmtree(_subject_upload_dir(subject.id), ignore_errors=True)
     shutil.rmtree(Path("outputs/markdown") / f"subject_id_{subject.id}", ignore_errors=True)
     return ActionResponse(success=True, message="Subject deleted")
 
@@ -183,6 +208,7 @@ def delete_chapter_api(
     chapter_id: int,
     _: UserPublic = Depends(get_admin_user),
 ) -> ActionResponse:
+    """Delete one chapter and its generated markdown."""
     subject = get_subject_by_subject_id(subject_id)
     if not subject:
         raise HTTPException(status_code=404, detail="Subject not found")

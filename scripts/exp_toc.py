@@ -1,10 +1,20 @@
 import json
+import os
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI 
 
+from packages.shared.env_loader import load_local_env
+
+
+load_local_env()
+
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "").strip()
+if not DEEPSEEK_API_KEY:
+    raise RuntimeError("Missing DEEPSEEK_API_KEY environment variable")
+
 llm = ChatOpenAI(
     model="deepseek-chat",            
-    api_key="sk-f84e168441a948b4b59ff56016f38e28",
+    api_key=DEEPSEEK_API_KEY,
     base_url="https://api.deepseek.com", 
     temperature=0.0                
 )

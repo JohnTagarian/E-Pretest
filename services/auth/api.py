@@ -29,15 +29,18 @@ STATE_TTL_SECONDS = 600
 
 
 def _urlsafe_b64encode(data: bytes) -> str:
+    """Encode bytes for OAuth state without padding."""
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
 
 
 def _urlsafe_b64decode(data: str) -> bytes:
+    """Decode a URL-safe base64 string and restore padding first."""
     padding = "=" * (-len(data) % 4)
     return base64.urlsafe_b64decode(data + padding)
 
 
 def _state_secret() -> str:
+    """Get the secret used to sign OAuth state."""
     # Prefer a dedicated secret. Fallback keeps dev simple.
     return (
         _env("OAUTH_STATE_SECRET")
@@ -46,6 +49,7 @@ def _state_secret() -> str:
 
 
 def _env(name: str) -> str:
+    """Read an env value and tolerate quoted .env entries."""
     value = os.getenv(name, "").strip()
     # tolerate quoted values in .env (common during manual export)
     if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
@@ -54,6 +58,7 @@ def _env(name: str) -> str:
 
 
 def _issue_state() -> str:
+    """Create a short-lived signed OAuth state token."""
     secret = _state_secret()
     if not secret:
         raise HTTPException(status_code=500, detail="OAuth state secret not configured")
@@ -70,6 +75,7 @@ def _issue_state() -> str:
 
 
 def _verify_state(state: str) -> None:
+    """Verify OAuth state signature and expiration."""
     secret = _state_secret()
     if not secret:
         raise HTTPException(status_code=500, detail="OAuth state secret not configured")
@@ -99,6 +105,7 @@ def _verify_state(state: str) -> None:
 
 
 def _build_google_auth_url(state: str) -> str:
+    """Build the Google OAuth consent URL for login."""
     client_id = _env("GOOGLE_CLIENT_ID")
     redirect_uri = _env("GOOGLE_REDIRECT_URI")
     if not client_id:
@@ -121,6 +128,7 @@ def _build_google_auth_url(state: str) -> str:
 
 
 def _exchange_code_for_access_token(code: str) -> str:
+    """Exchange Google's callback code for an access token."""
     token_url = "https://oauth2.googleapis.com/token"
     payload = {
         "code": code,
@@ -156,6 +164,7 @@ def _exchange_code_for_access_token(code: str) -> str:
     return access_token
 
 def _get_google_userinfo(access_token: str) -> dict:
+    """Fetch the signed-in user's profile from Google."""
     with httpx.Client(timeout=15.0) as client:
         response = client.get(
             "https://openidconnect.googleapis.com/v1/userinfo",
@@ -168,6 +177,7 @@ def _get_google_userinfo(access_token: str) -> dict:
 
 
 def _validate_kmutnb_email(email: str) -> None:
+    """Allow only KMUTNB student email accounts."""
     if not email.endswith(ALLOWED_EMAIL_DOMAIN):
         raise HTTPException(
             status_code=403,
@@ -177,6 +187,7 @@ def _validate_kmutnb_email(email: str) -> None:
 
 @router.get("/google/start")
 def google_start() -> RedirectResponse:
+    """Redirect browser users to Google login."""
     state = _issue_state()
     google_auth_url = _build_google_auth_url(state)
 
@@ -185,6 +196,7 @@ def google_start() -> RedirectResponse:
 
 @router.post("/google/start", response_model=AuthStartResponse)
 def google_start_api() -> AuthStartResponse:
+    """Return the Google login URL for SPA clients."""
     state = _issue_state()
     google_auth_url = _build_google_auth_url(state)
 
@@ -193,6 +205,7 @@ def google_start_api() -> AuthStartResponse:
 
 @router.get("/google/callback", response_model=AuthCallbackResponse)
 def google_callback(code: str = Query(...), state: str = Query(...)) -> AuthCallbackResponse:
+    """Handle Google callback and issue the app token."""
     _verify_state(state)
 
     google_access_token = _exchange_code_for_access_token(code)
@@ -227,6 +240,7 @@ def logout(
     credentials: HTTPAuthorizationCredentials | None = Depends(security),
     _: UserPublic = Depends(get_current_user),
 ) -> LogoutResponse:
+    """Revoke the current in-memory session token."""
     if credentials:
         revoke_token(credentials.credentials)
     return LogoutResponse(success=True)

@@ -4,13 +4,25 @@ __pycache__/
 .venv/
 .env
 .env.*
+!.env.example
+!infra/env/.env.example
 
 apps/web/node_modules/
 apps/web/dist/
 
+data/uploads/
+
 outputs/*
 !outputs/.gitkeep
+!outputs/markdown/
+outputs/markdown/*
 !outputs/markdown/.gitkeep
+!outputs/toc/
+outputs/toc/*
 !outputs/toc/.gitkeep
+!outputs/quiz/
+outputs/quiz/*
 !outputs/quiz/.gitkeep
+!outputs/logs/
+outputs/logs/*
 !outputs/logs/.gitkeep

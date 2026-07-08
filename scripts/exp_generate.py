@@ -4,6 +4,11 @@ import os
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 
+from packages.shared.env_loader import load_local_env
+
+
+load_local_env()
+
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 if not DEEPSEEK_API_KEY:
     raise RuntimeError("Missing DEEPSEEK_API_KEY environment variable")

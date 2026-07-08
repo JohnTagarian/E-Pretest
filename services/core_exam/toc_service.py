@@ -4,7 +4,10 @@ import os
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+from packages.shared.env_loader import load_local_env
+
+
+load_local_env()
 
 MODEL_NAME = "deepseek-chat"
 BASE_URL = "https://api.deepseek.com"
@@ -16,12 +19,16 @@ TEMPERATURE = 0.1
 # )
 logger = logging.getLogger(__name__)
 
-llm = ChatOpenAI(
-    model=MODEL_NAME,
-    api_key=DEEPSEEK_API_KEY,
-    base_url=BASE_URL,
-    temperature=TEMPERATURE,
-)
+def _get_llm() -> ChatOpenAI:
+    api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("Missing DEEPSEEK_API_KEY environment variable")
+    return ChatOpenAI(
+        model=MODEL_NAME,
+        api_key=api_key,
+        base_url=BASE_URL,
+        temperature=TEMPERATURE,
+    )
 
 json_schema = """
     {
@@ -53,6 +60,7 @@ def parse_toc(raw_text: str) -> list[str]:
 
 def build_toc_from_markdown(context_data: str, verbose: bool = True) -> tuple[list[str], str]:
     """Use LLM to extract Table of Contents from markdown text."""
+    llm = _get_llm()
     messages = [
         SystemMessage(content=f"""
         คุณคือผู้เชี่ยวชาญด้านการจัดกลุ่มเนื้อหา หน้าที่ของคุณคือหา Table of Content (TOC) จากเอกสารที่ได้รับ
@@ -89,5 +97,4 @@ def read_markdown_file(file_path: str) -> str:
         raise FileNotFoundError(f"ไม่พบไฟล์: '{file_path}'")
     except Exception as e:
         raise RuntimeError(f"เกิดข้อผิดพลาด: {e}")
-
 
